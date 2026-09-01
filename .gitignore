@@ -1,0 +1,27 @@
+# Environment / secrets
+.env
+fb_auth.json
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Local databases
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Local/debug output
+debug_output/
+
+# Data exports
+*.csv
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

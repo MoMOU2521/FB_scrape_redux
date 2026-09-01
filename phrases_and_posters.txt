@@ -1,0 +1,371 @@
+# ─── FILTER PHRASES ───────────────────────────────────────────────────────────
+[filter_phrases]
+(Agent)
+(AGENT)
+AGENT POST
+𝐀𝐠𝐞𝐧𝐭 𝐏𝐨𝐬𝐭
+Agent post
+agent post
+Agent Post
+Ag post
+เอเจ้นท์โพสต์
+-No agency-
+ไม่ปล่อยผ่านนายหน้า
+ไม่รับเอเจนซี่
+ไม่รับเอเจน
+ไม่รับ Agent
+ไม่รับ agent
+ไม่รับAgent
+ไม่รับเอเจ้นต์
+งดรับเอเจนต์
+งดรับเอเจนท์
+ไม่ผ่านนายหน้า
+ขออนุญาตไม่รับเอเจนค่ะ
+ไม่รับนายหน้า
+ไม่รับเอเจ้นต์
+งดรับนายหน้า
+ไม่รับเอเจ้นท์
+งดรับAgent
+ไม่รับag
+ไม่รับ Agent
+ไม่รับเอเจ้น
+ไม่ได้รับเอเจ้น
+No agent
+No Agent
+Ag โพสต์
+รับโค
+งดรับ co
+Co agents
+Co Agent
+co agent
+co Agent
+co-Ag
+(Ag)
+CO-AGENT
+COAGENT
+CO AGENT
+Co-Agent
+Co-agent
+Co-Ag
+co-agent
+Co-Ag Welcome
+Co-เอเจ้นท์
+Co-เอเจนท์
+Co-เอเจนท์ Welcome
+Co-เอเจ้นท์ Welcome
+Co - Agent
+โคเอเจ้น
+**ห้องนี้รับ Co agent ค่ะ**
+Welcome-Co
+Welcome Co
+Welcome Co-Agent
+บ้านเดี่ยว
+ที่ดินพร้อมอาคาร
+ทาวน์เฮาส์
+Hua Hin
+หัวหิน
+Jomtien
+Pattaya
+Phuket
+จอมเทียน
+ขายสัญญา
+ขายดาวน์
+นายหน้าอสังหาริมทรัพย์
+รหัสทรัพย์
+Client Looking
+ลูกค้าหา
+สัญญาเช่าต่อ
+ตามหาห้อง
+หาเช่า
+รับฝากขาย
+homefinderbangkok
+www.bangkokcondos.co.th
+@cloudestate
+Ai.SmartMatch
+@propertyfinder
+Realty One Estate Co.,LTD
+One Point Group
+Property Scout
+Condomangmun
+เอเจ้นซูซูกิ
+One Smart Estate
+smartlivingbangkok.com
+
+# ─── BLACKLISTED POSTERS ──────────────────────────────────────────────────────
+[blacklisted_posters]
+Pennapa Junpoang
+Tharaya Aoy
+Jusrawee Sonsed
+Sales Baan
+Biss Butdee
+Paploy Sin
+Kitti Kreeparseatkul
+Lin Linn
+Supunsa Homdokploy
+Kae Kae Kotchapan
+TyTy Property
+Kanoknipa Kongkluean
+Tanyanan Su
+Baansuay Condo
+Natty Thidawan Condomangmum
+Yaowaluk Srikaew
+Phukit Kaewmanee
+Paploy Sin
+ก้อย ปล่อยเช่าคอนโด
+Homie Property คอนโดสวยมือสอง ย่านฝั่งธน จรัญ ปิ่นเกล้า
+Tata Founder
+BaanChang Property
+Jkone Chang
+Phachal Kd
+Chayada Chivalak
+Ton Chanapak
+Parichat Changpradit
+TheParadise TP
+Tanasak Klomjit
+Luxe Living Property
+Chi Siko
+Phawit Songchan
+ฟีโนมีนอล เอสเตท
+May Tidarak
+G'Golf Kunatcharkorn
+ฟีโนมีนอล เอสเตท
+Jkone Chang
+Tanasak Klomjit
+ท้องฟ้าเดียวกัน แต่จันทร์ลำเอียง
+Por Kanokwan
+Paploy Sin
+Micky Paveena
+Thanyawan Thanyachaisiri
+Kim Heraza
+Krist Kristiya
+Home Suite Home Rentals
+Surasak Sadkhuntod
+Poss Atikan
+Sirimol Moore
+Pichamon Whainum
+BeyondKw Nanny
+Rawisada Propertyfinder
+Phatcharada Thaporn
+Whanjai Property
+August Htoo
+Fonstar Phuphanna
+Pitiwat Yingsakul
+Property Rich
+Chanakarn Kittipornnont
+Piyatida Tulputtha
+Nutchanart Jaronprom
+Rinrada Varagornsittichai
+Rittidech Noey
+ดาว เหนือ
+Rachada Es
+Nattasak Nick
+Nameis Phakbung
+Nampueng S. Kotchakorn
+Antz Phanwipa
+Noiy Nonsikran
+Atima Vetchme
+Poss Atikan
+Jentina Homes
+Belle Belle
+บ้านเช่าเชียงใหม่ ND-ForRent
+Supatchara Themrung
+Piwara Property
+Worawan Poy
+Gploy Eiei
+Art JuckJick
+Baan Chang Property
+Benz Nattapon
+Noppamest Thanasittwachira
+MoMii Kwon
+Sawai Soontarinka
+Jinatsita Ning
+Nuch Property
+Maysacha Saku
+Zeming Lin
+Narakorn Srisuk
+Sermpol Kantapon
+Pang Pond
+Smd Asset
+Lux Bkk
+Ninee Spn
+PN Siri
+CreamBuppachat Sawangsri
+Rainy Nns
+Durian Rent Prop
+Fern Fern
+Avarin Lucky Living Pattaya
+Ilharm Hem
+Topfiez Soontharayon
+Oom Kochakorn
+Kanune Ynm
+Givela Srisuluck
+Gift Sasi
+Larin Property
+Pordee Asset
+เดือน อสังหาริมทรัพย์
+Alessandra Drew
+Amanda MK
+Hong Thanawat
+Arm Pattaradej
+Dareen Mint Mint
+Dol Wintery
+Fews Keawkongka
+Dstay Property
+TR Real Estate
+Natchar Aiemngam
+เมย์ คอนโด ใกล้รถไฟฟ้า
+Soho Prop
+Peng Santudpanich
+Mook Matina
+Poonyapat KamJornjerd
+22 points
+Jiranuch Kittiyangkul
+Waraporn Mondcusso
+YU Rise
+Sairung Waensuk
+Nyrynya Kaimook
+Phun Phun
+Kiritsana Kullapheat
+Lhong Property
+อะ อาา อาาม
+Tharaya GT
+Pantawan Viangbut
+Apat Patsanan
+Evesauce
+Jirasate Lertdhirakul
+Uppsornruch Vaidyanuwat
+Rebecca Wang
+Apichat Sowat
+Setthawut Kbth
+Bussara Sabchom
+Lim Kim Hor
+Firstsong Ponsuang
+Pleng Pleng
+Sudarat Hornak
+杨丽丽
+Rizz Timeless
+Masternin Rungruanglumsum
+Cloud 9 Estates
+Fincondo
+ปลดหนี้ด้วยคอนโดเงินเหลือ
+NTP Property
+Thanya Noi
+ยูคอนโด โฮม
+Bome Sermlarp
+Nattaporn Khuntivongvarn
+Worawan Papoy
+Worawan Thankhoo
+Ying Ying
+Bundit Kmc
+Sami Samiland
+Beau Natrada
+Chaiyo Silver Palm
+Apinya Sichok
+Nicky EstateAscent
+Kratae Supreeya
+Weerapol Pokklum
+Witchuda Phet
+Bo Thidakan
+Joom Pholrach
+Star Orapan
+Mint Siramon
+Diiz Patty Nareerat
+Arraya Saelo
+Pee Home
+Patiphan Chanbua
+Khattiya Juntong
+Suchada Sanyarak
+Khempron Wongsalong
+Sarena Choengsamor
+Earn Jaruphat
+Nicharee Klaylak
+Tie'Tle Theo
+Alin Alinnun
+ตุ๊กตา เริงระบํา
+Fah Thong
+Hayatee Bosu
+Nova Property
+Uro Jiampukvan
+Juhyun Bae
+Thanatch BC
+Book Vimolsiri
+สิทธิชัย ย.
+Paak Chamadol
+Kay HomeFinder
+Aek Parkinn
+Peeda Kittide
+อสังหา วันจันทร์
+Autsariya Boonamorn
+Jariya Potiya
+Maew Kety Invest
+Saruta Dachaw
+Atchara Sangwanram
+Ladyj Property
+Chomcpn Orick
+Rental Cosy Beach View
+Saikim Jiraporn
+Naruemon Tohon
+Aeris Living
+Monty Montanee
+รัชชนันท์ ไม้เก่า
+Munthus Mew
+Guy Guy
+DualCo Property
+LI SF
+กัลยรัตน์ อภิวัฒโนดม
+Alexander Hung
+อ้อม เอเจ้นท์ อสังหาริมทรัพย์
+Waeyusop Waemusor
+Tai Hometour
+Namnung Sweet
+Mint Kub
+Papinya Ying
+Ar Kay
+Ningmd Kla Lilittrakoon
+Andrea Neri
+อสังหา เชียงใหม่
+ThanikaHome
+Mind Horsuwan
+Patcharanun Chatwattanasukon
+VD Condo
+Duangdao Arworn
+Ching Ching Siriporn
+Jolly JourneyCo
+Soraya K Grealish
+Phoom Anothai Kanchumpa
+Natty Natapat
+MoMay Mjeh
+Punner Pcn
+Tawan Ruengjoy
+Alisa Tanatchasai
+Puifai Pattaraporn
+Nobprakorn Pinphong
+ดรัณภัทร ปานใจ
+Ax Iamaxartia
+Thanyalag Jeww
+Nae Natipa
+Phimtharaphat Chaiphongrut
+Sareefah Peeraya
+Minpapach Rattanawaran
+Naphat Cheewapisan
+Ptz Home Property
+Лия Ива
+Tourist Property
+Benz Balenzx
+Kawoat WanwiSa
+Som Manee
+Sirinarinton Phaw-on
+Preaww Natnicha
+Joy Prangthip
+Sarinya Toeyrinya
+ธนา ณัฐ
+Pim Jeang
+Kay KayGood
+PChaven Condo-House
+Milk Thanisorn
+Bond Loxv
+Ivy Kamonwan
+สมชาติ ลีลาธนพงศ์
+รวีโรจน์ กองแก้ว
+Krittaphat Areerut
+Phakphum Julnipitawong
