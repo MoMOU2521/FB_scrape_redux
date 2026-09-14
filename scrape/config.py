@@ -59,6 +59,7 @@ GROUPS = {
         "members": "172.2K",
         "type": "Private",
     },
+    # 3
     "2": {
         "name": "Condo Owner ขาย-เช่า คอนโด สำหรับเจ้าของห้องโพสเท่านั้น ห้ามเอเจนท์โพส",
         "url": "https://www.facebook.com/groups/386316227145323/?sorting_setting=CHRONOLOGICAL",
@@ -71,13 +72,14 @@ GROUPS = {
         "members": "112.1K",
         "type": "Public",
     },
+    # 5
     "4": {
         "name": "Owner Post เจ้าของปล่อยเช่าคอนโด 业主出租群",
         "url": "https://www.facebook.com/groups/374078016708868/?sorting_setting=CHRONOLOGICAL ",
         "members": "95.8K",
         "type": "Public",
     },
-    ##
+    ### persistant issue. anti bot surely
     "5": {
         "name": "CONDO & PROPERTY POST BY OWNER",
         "url": "https://www.facebook.com/groups/299716057099018/?sorting_setting=CHRONOLOGICAL_LISTINGS",
@@ -90,12 +92,14 @@ GROUPS = {
         "members": "20.1K",
         "type": "Public",
     },
+    # 2
     "7": {
         "name": "กลุ่มคอนโดฝั่งธนบุรี ใกล้ BTS MRT ท่าพระ ตลาดพลู เพชรเกษม บางแค จรัญฯ",
         "url": "https://www.facebook.com/groups/3397058930622540/?sorting_setting=CHRONOLOGICAL",
         "members": "36.3K",
         "type": "Public",
     },
+    # 4
     "8": {
         "name": "ขาย/ ให้เช่า คอนโด หอพัก ย่าน จรัญฯ ปิ่นเกล้า บางพลัด อิสรภาพ",
         "url": "https://www.facebook.com/groups/176633257654992/?sorting_setting=CHRONOLOGICAL",
@@ -108,7 +112,8 @@ GROUPS = {
         "members": "6.3K",
         "type": "Public",
     },
-    ##
+    ## problematic and saturated with spam.
+    # 1
     "10": {
         "name": "คอนโดให้เช่าฝั่งธน ใกล้ BTS MRT บางแค บางหว้า ตลาดพลู วุฒากาศ วงเวียนใหญ่",
         "url": "https://www.facebook.com/groups/388594476619201/?sorting_setting=CHRONOLOGICAL",

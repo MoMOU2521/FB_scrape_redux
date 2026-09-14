@@ -4,10 +4,11 @@ import time
 import multiprocessing
 import traceback
 from wcwidth import wcswidth
+from db.database import db
 
 import scrape.config as config
 from web.blacklist import get_blacklist_counts
-from scrape.scraper import scrape_group  # FIXED: import from scraper, not core
+from scrape.scraper import scrape_group
 
 
 def _empty_result(group, error):
@@ -28,103 +29,6 @@ def _empty_result(group, error):
     }
 
 
-# def _scrape_group_worker(
-#     group,
-#     auto_mode,
-#     target,
-#     stop_timestamps,
-#     shared_heartbeat,
-#     result_queue,
-# ):
-#     """
-#     Runs in a separate OS process. Opens its own DB connection, runs
-#     scrape_group, and puts the result on the queue for the parent to collect.
-#     """
-#     from db.db_core import Core
-
-#     db = Core(config.DB_FILE)
-#     try:
-#         # Pass db to scrape_group if it accepts it, otherwise use global
-#         # For now, we'll let scrape_group use its own global connection
-#         result = scrape_group(
-#             group,
-#             auto_mode=auto_mode,
-#             target=target,
-#             stop_timestamps=stop_timestamps,
-#             shared_heartbeat=shared_heartbeat,
-#         )
-#     except Exception as e:
-#         traceback.print_exc()
-#         result = _empty_result(group, str(e))
-#     finally:
-#         db.close()
-#     result_queue.put(result)
-
-
-# def run_group_with_watchdog(
-#     group, auto_mode, target, stop_timestamps, watchdog_timeout=None
-# ):
-#     """
-#     Runs scrape_group for one group in a subprocess. If the subprocess's
-#     heartbeat goes stale for longer than watchdog_timeout seconds, the
-#     subprocess is force-killed and the group is abandoned with an error
-#     result, instead of hanging forever.
-#     """
-#     if watchdog_timeout is None:
-#         watchdog_timeout = getattr(
-#             config, "WATCHDOG_TIMEOUT", 60
-#         )  # FIXED: fallback default
-
-#     shared_heartbeat = multiprocessing.Value("d", time.time())
-#     result_queue = multiprocessing.Queue()
-#     lock = multiprocessing.Lock()  # FIXED: add lock for thread-safe heartbeat access
-
-#     process = multiprocessing.Process(
-#         target=_scrape_group_worker,
-#         args=(
-#             group,
-#             auto_mode,
-#             target,
-#             stop_timestamps,
-#             shared_heartbeat,
-#             result_queue,
-#         ),
-#     )
-#     process.start()
-
-#     while True:
-#         process.join(timeout=5)
-#         if not process.is_alive():
-#             break
-
-#         with lock:  # FIXED: safely access shared_heartbeat
-#             stuck_for = time.time() - shared_heartbeat.value
-#         if stuck_for > watchdog_timeout:
-#             print(
-#                 f"⚠️ WATCHDOG: no heartbeat for {stuck_for:.0f}s on group "
-#                 f"'{group['name']}' - killing process"
-#             )
-#             process.terminate()
-#             process.join(timeout=5)
-#             if process.is_alive():
-#                 process.kill()
-#                 process.join(timeout=5)
-#             return _empty_result(
-#                 group,
-#                 f"watchdog killed process after {stuck_for:.0f}s with no heartbeat",
-#             )
-
-#     try:
-#         result = result_queue.get(timeout=5)
-#         # FIXED: check if scrape_group returned an error internally
-#         if result.get("error") is not None:
-#             print(f"⚠️ Group {group['name']} returned error: {result['error']}")
-#     except Exception:
-#         result = _empty_result(group, "process exited without returning a result")
-
-#     return result
-
-
 def _scrape_group_worker(
     group,
     stop_mode,
@@ -136,9 +40,7 @@ def _scrape_group_worker(
     Runs in a separate OS process. Opens its own DB connection, runs
     scrape_group, and puts the result on the queue for the parent to collect.
     """
-    from db.db_core import Core
 
-    db = Core(config.DB_FILE)
     try:
         result = scrape_group(
             group,

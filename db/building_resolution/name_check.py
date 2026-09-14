@@ -1,4 +1,4 @@
-# db/building_resolution/name_check.py
+# db.building_resolution.name_check.py
 import re
 
 _THAI_RE = re.compile(r"[\u0E00-\u0E7F]")

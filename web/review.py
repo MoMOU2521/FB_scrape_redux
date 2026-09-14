@@ -1,7 +1,7 @@
 # web/review.py
 import asyncio
 
-from db.db_core import core
+from db.database import db
 from web.templates import REVIEW_TEMPLATE
 import db.db_entry as db_entry
 
@@ -11,7 +11,7 @@ import db.db_entry as db_entry
 
 
 def get_pending_review_ids():
-    rows = core.cur.execute("""
+    rows = db.cur.execute("""
         SELECT id
         FROM entry_review_queue
         WHERE reviewed = 0
@@ -21,7 +21,7 @@ def get_pending_review_ids():
 
 
 def get_first_pending_id():
-    row = core.cur.execute("""
+    row = db.cur.execute("""
         SELECT id
         FROM entry_review_queue
         WHERE reviewed = 0
@@ -32,7 +32,7 @@ def get_first_pending_id():
 
 
 def get_review_row(review_id: int):
-    row = core.cur.execute(
+    row = db.cur.execute(
         """
         SELECT rq.id AS review_id,
                rq.post_id,
@@ -55,11 +55,11 @@ def get_review_row(review_id: int):
 
 
 def mark_reviewed(review_id: int):
-    core.cur.execute(
+    db.cur.execute(
         "UPDATE entry_review_queue SET reviewed = 1 WHERE id = ?", (review_id,)
     )
-    core.conn.commit()
-    return core.cur.rowcount
+    db.conn.commit()
+    return db.cur.rowcount
 
 
 # ============================================================================

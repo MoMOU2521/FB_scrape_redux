@@ -2,7 +2,7 @@
 import os
 import asyncio
 
-from db.db_core import core
+from db.database import db
 from web.templates import PAGE_TEMPLATE
 from web.building_alias import get_building_names
 
@@ -13,7 +13,7 @@ from web.building_alias import get_building_names
 
 def get_processed_ids():
     """Get all processed post IDs ordered oldest to newest."""
-    rows = core.cur.execute("""
+    rows = db.cur.execute("""
         SELECT id, processed
         FROM posts
         WHERE processed = 1
@@ -24,7 +24,7 @@ def get_processed_ids():
 
 def get_first_processed_id():
     """Get the oldest processed post ID."""
-    row = core.cur.execute("""
+    row = db.cur.execute("""
         SELECT id
         FROM posts
         WHERE processed = 1
@@ -34,21 +34,8 @@ def get_first_processed_id():
     return row[0] if row else None
 
 
-# def get_post_by_id(row_id: int):
-#     """Fetch a specific processed post by ID."""
-#     row = core.cur.execute(
-#         """
-#         SELECT id, post_id, author, text, post_url, processed, group_name, scraped_at, selected,
-#                result_json_v1, gate1_reasoning, gate1_prompt_version
-#         FROM posts
-#         WHERE id = ?
-#         AND processed = 1
-#         """,
-#         (row_id,),
-#     ).fetchone()
-#     return dict(row) if row else None
 def get_post_by_id(row_id: int):
-    row = core.cur.execute(
+    row = db.cur.execute(
         """
         SELECT id, post_id, author, text, post_url, processed, group_name, scraped_at, selected,
                result_json_v1, gate1_reasoning, gate1_prompt_version,
@@ -64,28 +51,12 @@ def get_post_by_id(row_id: int):
 
 def get_author_of_post(row_id: int):
     """Get author name for a given post ID (processed or not)."""
-    row = core.cur.execute(
-        "SELECT author FROM posts WHERE id = ?", (row_id,)
-    ).fetchone()
+    row = db.cur.execute("SELECT author FROM posts WHERE id = ?", (row_id,)).fetchone()
     return row["author"] if row else None
 
 
-# def get_posts_by_author_processed(author: str):
-#     """Get all processed posts for a specific author, ordered oldest to newest."""
-#     rows = core.cur.execute(
-#         """
-#         SELECT id, post_id, author, text, post_url, processed, group_name, selected,
-#                result_json_v1, gate1_reasoning, gate1_prompt_version
-#         FROM posts
-#         WHERE author = ?
-#         AND processed = 1
-#         ORDER BY id
-#         """,
-#         (author,),
-#     ).fetchall()
-#     return [dict(r) for r in rows]
 def get_posts_by_author_processed(author: str):
-    rows = core.cur.execute(
+    rows = db.cur.execute(
         """
         SELECT id, post_id, author, text, post_url, processed, group_name, selected,
                result_json_v1, gate1_reasoning, gate1_prompt_version,
@@ -102,7 +73,7 @@ def get_posts_by_author_processed(author: str):
 
 def get_first_processed_id_for_author(author: str):
     """Get the oldest processed post ID for a specific author."""
-    row = core.cur.execute(
+    row = db.cur.execute(
         """
         SELECT id
         FROM posts
@@ -118,7 +89,7 @@ def get_first_processed_id_for_author(author: str):
 
 def count_processed_by_author(author: str) -> int:
     """Count processed posts for a specific author."""
-    row = core.cur.execute(
+    row = db.cur.execute(
         "SELECT COUNT(*) FROM posts WHERE author = ? AND processed = 1",
         (author,),
     ).fetchone()

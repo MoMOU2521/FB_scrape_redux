@@ -115,7 +115,7 @@ def get_first_unprocessed_id():
         SELECT id
         FROM posts
         WHERE processed = 0 OR processed IS NULL
-        ORDER BY id ASC 
+        ORDER BY id ASC
         LIMIT 1
     """).fetchone()
     return row[0] if row else None

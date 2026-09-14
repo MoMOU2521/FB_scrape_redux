@@ -800,101 +800,101 @@ class Handler(BaseHTTPRequestHandler):
     # Shared HTTP helpers
     # ------------------------------------------------------------------
 
-    def _handle_post(
-        self,
-        route_fn,
-        error_status_override=False,
-    ):
-        try:
-            length = int(
-                self.headers.get(
-                    "Content-Length",
-                    0,
-                )
-            )
+    # def _handle_post(
+    #     self,
+    #     route_fn,
+    #     error_status_override=False,
+    # ):
+    #     try:
+    #         length = int(
+    #             self.headers.get(
+    #                 "Content-Length",
+    #                 0,
+    #             )
+    #         )
 
-            body = self.rfile.read(length)
-            data = json.loads(body)
+    #         body = self.rfile.read(length)
+    #         data = json.loads(body)
 
-            status, payload = route_fn(data)
+    #         status, payload = route_fn(data)
 
-            self._send_json(
-                status,
-                payload,
-            )
+    #         self._send_json(
+    #             status,
+    #             payload,
+    #         )
 
-        except (
-            db_entry.OwnerConflictError,
-            db_entry.NoIdentifiableOwnerError,
-            db_entry.BuildingConflictError,
-            db_entry.BuildingNotFoundError,
-        ) as e:
-            self._send_json(
-                409,
-                {"error": str(e)},
-            )
+    #     except (
+    #         db_entry.OwnerConflictError,
+    #         db_entry.NoIdentifiableOwnerError,
+    #         db_entry.BuildingConflictError,
+    #         db_entry.BuildingNotFoundError,
+    #     ) as e:
+    #         self._send_json(
+    #             409,
+    #             {"error": str(e)},
+    #         )
 
-        except Exception as e:
-            print(
-                "POST ERROR:",
-                e,
-            )
+    #     except Exception as e:
+    #         print(
+    #             "POST ERROR:",
+    #             e,
+    #         )
 
-            self._send_json(
-                400 if not error_status_override else 500,
-                {"error": str(e)},
-            )
+    #         self._send_json(
+    #             400 if not error_status_override else 500,
+    #             {"error": str(e)},
+    #         )
 
-    def _send_html(self, html: str):
-        self.send_response(200)
+    # def _send_html(self, html: str):
+    #     self.send_response(200)
 
-        self.send_header(
-            "Content-type",
-            "text/html",
-        )
+    #     self.send_header(
+    #         "Content-type",
+    #         "text/html",
+    #     )
 
-        self.end_headers()
+    #     self.end_headers()
 
-        try:
-            self.wfile.write(html.encode())
-        except BrokenPipeError:
-            pass
+    #     try:
+    #         self.wfile.write(html.encode())
+    #     except BrokenPipeError:
+    #         pass
 
-    def _send_json(
-        self,
-        status: int,
-        payload: dict,
-    ):
-        self.send_response(status)
+    # def _send_json(
+    #     self,
+    #     status: int,
+    #     payload: dict,
+    # ):
+    #     self.send_response(status)
 
-        self.send_header(
-            "Content-type",
-            "application/json",
-        )
+    #     self.send_header(
+    #         "Content-type",
+    #         "application/json",
+    #     )
 
-        self.end_headers()
+    #     self.end_headers()
 
-        try:
-            self.wfile.write(json.dumps(payload).encode())
-        except BrokenPipeError:
-            pass
+    #     try:
+    #         self.wfile.write(json.dumps(payload).encode())
+    #     except BrokenPipeError:
+    #         pass
 
-    def _send_redirect(
-        self,
-        location: str,
-    ):
-        self.send_response(302)
+    # def _send_redirect(
+    #     self,
+    #     location: str,
+    # ):
+    #     self.send_response(302)
 
-        self.send_header(
-            "Location",
-            location,
-        )
+    #     self.send_header(
+    #         "Location",
+    #         location,
+    #     )
 
-        self.end_headers()
+    #     self.end_headers()
 
-    def log_message(
-        self,
-        format,
-        *args,
-    ):
-        pass
+    # def log_message(
+    #     self,
+    #     format,
+    #     *args,
+    # ):
+    #     pass

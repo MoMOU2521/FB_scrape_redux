@@ -1,7 +1,7 @@
 # web.filters.py
 from datetime import datetime, timezone
 
-from db.db_core import core
+from db.database import db
 from web.templates import FILTERS_TEMPLATE
 
 # ============================================================================
@@ -10,35 +10,35 @@ from web.templates import FILTERS_TEMPLATE
 
 
 def is_phrase_filtered(text: str):
-    core.cur.execute("SELECT phrase FROM filter_phrases")
-    for (phrase,) in core.cur.fetchall():
+    db.cur.execute("SELECT phrase FROM filter_phrases")
+    for (phrase,) in db.cur.fetchall():
         if phrase in text:
             return phrase
     return None
 
 
 def add_filter_phrase(phrase: str):
-    core.cur.execute(
+    db.cur.execute(
         "INSERT OR IGNORE INTO filter_phrases (phrase, added_at) VALUES (?, ?)",
         (phrase, datetime.now(timezone.utc).isoformat()),
     )
-    core.conn.commit()
+    db.conn.commit()
 
 
 def filter_phrase_exists(phrase: str) -> bool:
-    row = core.cur.execute(
+    row = db.cur.execute(
         "SELECT 1 FROM filter_phrases WHERE phrase = ?", (phrase,)
     ).fetchone()
     return row is not None
 
 
 def delete_filter_phrase(phrase: str):
-    core.cur.execute("DELETE FROM filter_phrases WHERE phrase = ?", (phrase,))
-    core.conn.commit()
+    db.cur.execute("DELETE FROM filter_phrases WHERE phrase = ?", (phrase,))
+    db.conn.commit()
 
 
 def get_filter_rows():
-    return core.cur.execute(
+    return db.cur.execute(
         "SELECT phrase, added_at FROM filter_phrases ORDER BY added_at DESC"
     ).fetchall()
 

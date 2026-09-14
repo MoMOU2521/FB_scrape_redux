@@ -1,4 +1,4 @@
-# db_schemas.py
+# db.db_schemas.py
 #
 # Pydantic validation shapes, copied (not imported) from the main app.
 # Used to validate gate1 JSON before building Core insert() values.

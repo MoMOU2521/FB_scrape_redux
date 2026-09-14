@@ -171,3 +171,79 @@ class GroqAIClient:
             "reasoning": getattr(message, "reasoning", None),
             "finish_reason": resp.choices[0].finish_reason,
         }
+
+
+# cleanup later
+class TPMSelfRegulator:
+    """Self-regulating TPM (Tokens Per Minute) controller."""
+
+    def __init__(self, max_tokens_per_minute=12000, safety_margin=0.8):
+        """
+        Args:
+            max_tokens_per_minute: Maximum tokens allowed per minute
+            safety_margin: Fraction of limit to use (0.8 = 80% of limit)
+        """
+        self.max_tokens_per_minute = int(max_tokens_per_minute * safety_margin)
+        self.window_seconds = 60
+        self.token_history = []  # List of (timestamp, tokens_used)
+        self.last_request_time = None
+
+    def wait_if_needed(self, estimated_input_tokens=0, estimated_output_tokens=0):
+        """
+        Check if we need to wait before making a request.
+        Returns the wait time in seconds.
+        """
+        now = time.time()
+        total_estimated_tokens = estimated_input_tokens + estimated_output_tokens
+
+        # Clean up old history (older than 60 seconds)
+        cutoff = now - self.window_seconds
+        self.token_history = [
+            (ts, tokens) for ts, tokens in self.token_history if ts > cutoff
+        ]
+
+        # Calculate tokens used in the current window
+        tokens_used_in_window = sum(tokens for _, tokens in self.token_history)
+
+        # Check if this request would exceed the limit
+        if tokens_used_in_window + total_estimated_tokens > self.max_tokens_per_minute:
+            # Wait until the oldest token usage falls out of the window
+            if self.token_history:
+                oldest_ts = min(ts for ts, _ in self.token_history)
+                wait_time = (oldest_ts + self.window_seconds) - now + 0.5
+                if wait_time > 0:
+                    return wait_time
+
+        return 0
+
+    def record_usage(self, input_tokens, output_tokens):
+        """Record token usage after a request completes."""
+        now = time.time()
+        total_tokens = input_tokens + output_tokens
+        self.token_history.append((now, total_tokens))
+        self.last_request_time = now
+
+        return total_tokens
+
+    def get_usage_stats(self):
+        """Get current usage statistics."""
+        now = time.time()
+        cutoff = now - self.window_seconds
+        self.token_history = [
+            (ts, tokens) for ts, tokens in self.token_history if ts > cutoff
+        ]
+
+        tokens_in_window = sum(tokens for _, tokens in self.token_history)
+        requests_in_window = len(self.token_history)
+
+        return {
+            "tokens_used_last_minute": tokens_in_window,
+            "requests_last_minute": requests_in_window,
+            "max_tokens_per_minute": self.max_tokens_per_minute,
+            "available_tokens": max(0, self.max_tokens_per_minute - tokens_in_window),
+            "remaining_percent": (
+                max(0, (1 - tokens_in_window / self.max_tokens_per_minute) * 100)
+                if self.max_tokens_per_minute > 0
+                else 100
+            ),
+        }

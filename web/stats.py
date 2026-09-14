@@ -1,7 +1,7 @@
 # web.stats.py
-from db.db_core import core
+from db.database import db
 from web.templates import STATS_TEMPLATE, AUTHOR_LIST_TEMPLATE
-from web.posts import get_first_unprocessed_id_for_author
+from web.queries.posts import get_first_unprocessed_id_for_author
 
 # ============================================================================
 # QUERIES
@@ -9,7 +9,7 @@ from web.posts import get_first_unprocessed_id_for_author
 
 
 def get_group_stats():
-    rows = core.cur.execute("""
+    rows = db.cur.execute("""
         SELECT
             group_name,
             COUNT(*) as total,
@@ -23,7 +23,7 @@ def get_group_stats():
 
 
 def get_authors_by_unprocessed_count(min_count=2):
-    core.cur.execute(
+    db.cur.execute(
         """
         SELECT
             author,
@@ -36,11 +36,11 @@ def get_authors_by_unprocessed_count(min_count=2):
     """,
         (min_count,),
     )
-    return core.cur.fetchall()
+    return db.cur.fetchall()
 
 
 def get_next_unprocessed_ai():
-    row = core.cur.execute("""
+    row = db.cur.execute("""
         SELECT id, author, group_name, timestamp, post_url, text
         FROM posts
         WHERE ai_processed = 0 OR ai_processed IS NULL
@@ -50,8 +50,8 @@ def get_next_unprocessed_ai():
 
 
 def mark_ai_processed(row_id: int):
-    core.cur.execute("UPDATE posts SET ai_processed = 1 WHERE id = ?", (row_id,))
-    core.conn.commit()
+    db.cur.execute("UPDATE posts SET ai_processed = 1 WHERE id = ?", (row_id,))
+    db.conn.commit()
 
 
 # ============================================================================

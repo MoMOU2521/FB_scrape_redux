@@ -1,7 +1,11 @@
 # main_ai.py
 import sys
 
-from ai.runner import run_gate1, run_extraction, run_pipeline, run_transliterate
+# from ai.runner import run_gate1, run_extraction, run_pipeline
+
+from ai.runner.run_extraction import run_extraction
+from ai.runner.run_pipeline import run_pipeline
+from ai.runner.run_gate1 import run_gate1
 
 
 def main():
@@ -15,8 +19,8 @@ def main():
         run_extraction()
     elif sys.argv[1] == "pipeline":
         run_pipeline()
-    elif sys.argv[1] == "transliterate":
-        run_transliterate()
+    # elif sys.argv[1] == "transliterate":
+    #     run_transliterate()
     else:
         print("Invalid. Use 'gate1', 'extraction', 'pipeline', or 'transliterate'")
 

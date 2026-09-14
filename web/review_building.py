@@ -1,13 +1,17 @@
 # web/review_building.py
 import os
 import asyncio
-from db.db_core import core
+from db.database import db
 from web.templates import PAGE_TEMPLATE
 from web.building_alias import get_building_names
 
+# ============================================================================
+# QUERIES
+# ============================================================================
+
 
 def get_pending_building_ids():
-    rows = core.cur.execute("""
+    rows = db.cur.execute("""
         SELECT id FROM posts
         WHERE review_building = 1 AND processed = 1
         ORDER BY id ASC
@@ -16,7 +20,7 @@ def get_pending_building_ids():
 
 
 def get_first_pending_building_id():
-    row = core.cur.execute("""
+    row = db.cur.execute("""
         SELECT id FROM posts
         WHERE review_building = 1 AND processed = 1
         ORDER BY id ASC LIMIT 1
@@ -25,7 +29,7 @@ def get_first_pending_building_id():
 
 
 def get_building_review_post(post_id: int):
-    row = core.cur.execute(
+    row = db.cur.execute(
         """
         SELECT id, post_id, author, text, post_url, processed, group_name, scraped_at, selected,
                result_json_v1, gate1_reasoning, gate1_prompt_version,
@@ -51,6 +55,11 @@ def _attach_images(post):
         )
     else:
         post["images"] = []
+
+
+# ============================================================================
+# PAGE ASSEMBLY
+# ============================================================================
 
 
 def build_page(post_id: int, all_ids: list):

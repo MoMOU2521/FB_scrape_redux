@@ -1,147 +1,12 @@
-# # main.py
-# import time
-# import multiprocessing
-# import traceback
-# import re
-
-# import scrape.config as config
-# from db.db_core import core
-# from web.blacklist import get_blacklist_counts
-# from scrape.runner import run_group_with_watchdog, print_summary
-
-
-# def _parse_cutoff_to_hours(user_input):
-#     m = re.search(r"(\d+)\s*(h|d|w)", user_input.strip().lower())
-#     if not m:
-#         return None
-#     value, unit = int(m.group(1)), m.group(2)
-#     if unit == "h":
-#         return value
-#     if unit == "d":
-#         return value * 24
-#     if unit == "w":
-#         return value * 24 * 7
-#     return None
-
-
-# def get_stop_timestamps():
-#     default_input = "1d"
-#     print("\nStop scraping once a post is at least this old.")
-#     print("Examples: 6h, 12h, 1d, 2d")
-#     print(f"Press Enter for default [{default_input}]")
-#     user_input = input("> ").strip().lower() or default_input
-
-#     cutoff_hours = _parse_cutoff_to_hours(user_input)
-#     while cutoff_hours is None:
-#         print(f"Couldn't parse '{user_input}', try again (e.g. 6h, 1d, 2w):")
-#         user_input = input("> ").strip().lower()
-#         cutoff_hours = _parse_cutoff_to_hours(user_input)
-
-#     return config.build_stop_list(cutoff_hours)
-
-
-# def main():
-#     print("\nWhich group?")
-#     for k, g in config.GROUPS.items():
-#         print(f"  {k}. {g['name']}")
-#     print("  T. ALL groups (auto mode)")
-#     choice = input("Enter number or 'T': ").strip()
-
-#     # Cleanup old posts at session start using shared core connection.
-#     core.cleanup_old_posts()
-
-#     if choice.upper() == "T":
-#         stop_timestamps = get_stop_timestamps()
-#         print(
-#             f"\nTOTAL MODE: Processing all groups with stop timestamps: {stop_timestamps}"
-#         )
-#         all_results = []
-#         for key, group in config.GROUPS.items():
-#             result = run_group_with_watchdog(
-#                 group, auto_mode=True, target=None, stop_timestamps=stop_timestamps
-#             )
-#             all_results.append(result)
-#             if result["error"]:
-#                 print(f"⚠️ Group {key} failed, continuing to next...")
-#         print_summary(all_results)
-#         return
-
-#     if choice not in config.GROUPS:
-#         print("Invalid")
-#         return
-
-#     group = config.GROUPS[choice]
-#     print("\nScrape mode:")
-#     print("  1. Manual - enter number of posts")
-#     print("  2. Auto - stop at specified timestamp(s)")
-#     mode = input("Enter mode (1 or 2): ").strip()
-
-#     target = None
-#     auto_mode = False
-#     stop_timestamps = None
-
-#     if mode == "1":
-#         try:
-#             target = int(input("Number of posts to scroll past: "))
-#         except:
-#             print("Invalid")
-#             return
-#     elif mode == "2":
-#         auto_mode = True
-#         stop_timestamps = get_stop_timestamps()
-#         print(f"Auto mode: will stop at first post with timestamp in {stop_timestamps}")
-#     else:
-#         print("Invalid mode")
-#         return
-
-#     result = run_group_with_watchdog(
-#         group, auto_mode=auto_mode, target=target, stop_timestamps=stop_timestamps
-#     )
-
-#     print(f"""
-# ╔══════════════════════════════════════════
-# ║              SCRAPE SUMMARY
-# ╠══════════════════════════════════════════
-# ║  Group   : {result['group_name'][:40]:<40} ║
-# ╠══════════════════════════════════════════
-# ║  Stop on : {', '.join(stop_timestamps) if stop_timestamps else 'N/A':<24} ║
-# ╠══════════════════════════════════════════
-# ║  Scrolled past : {result['encountered']:<24}
-# ║  ✅ Saved      : {result['saved']:<24}
-# ║  ⏭️ Skipped    : {result['skipped']:<24}
-# ║    ↳ Deduplicated  : {result['skip_dedup']:<21}
-# ║    ↳ Filter phrase : {result['skip_filter']:<21}
-# ║    ↳ Blacklisted   : {result['skip_blacklist']:<21}
-# ║    ↳ No text       : {result['skip_no_text']:<21}
-# ║  Stalls          : {result['stall_count']:<24}
-# ║  Terminated      : {'Y' if result.get('terminated', False) else 'N':<24}
-# ║  Time            : {result['time_seconds']:.1f}s
-# ╚══════════════════════════════════════════
-# """)
-
-#     tracker = result.get("session_blacklist", {})
-#     if tracker:
-#         print("\n🚫 BLACKLISTED AUTHORS (this session):")
-#         lifetime_counts = get_blacklist_counts(tracker.keys())
-#         sorted_offenders = sorted(tracker.items(), key=lambda x: x[1], reverse=True)
-#         for author, session_count in sorted_offenders:
-#             lifetime = lifetime_counts.get(author, 0)
-#             print(f"   {author}: {session_count} this session, {lifetime} total")
-
-
-# if __name__ == "__main__":
-#     main()
-
 # main.py
-import time
-import multiprocessing
-import traceback
 import re
 
+from db.database import db
 import scrape.config as config
-from db.db_core import core
 from web.blacklist import get_blacklist_counts
 from scrape.runner import run_group_with_watchdog, print_summary
+
+from db.services.posts.processing import cleanup_old_posts
 
 
 def _parse_cutoff_to_hours(user_input):
@@ -209,9 +74,10 @@ def main():
         print(f"  {k}. {g['name']}")
     print("  T. ALL groups")
     choice = input("Enter number or 'T': ").strip()
+    # db = LocalDatabase(DB_FILE)
 
     # Cleanup old posts at session start using shared core connection.
-    core.cleanup_old_posts()
+    cleanup_old_posts()
 
     if choice.upper() == "T":
         stop_mode, stop_timestamps = get_stop_mode()

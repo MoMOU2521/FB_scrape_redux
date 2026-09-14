@@ -1,4 +1,4 @@
-# db_tables.py
+# db.db_tables.py
 #
 # SQLAlchemy Core table skeletons — structural mirror only.
 # No ORM classes, no relationships, no Base, no cascade behavior.

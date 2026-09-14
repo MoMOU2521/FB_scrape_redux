@@ -1,15 +1,13 @@
-# main_ui.py
 import os
 import webbrowser
-from http.server import HTTPServer
+from wsgiref.simple_server import make_server
 
 import scrape.config as config
-from web.server import Handler
+from web.app import app
 
 
 def main() -> None:
-    """Start the HTTP server and open browser."""
-    db_path = os.path.abspath(config.DB_FILE)
+    db_path = os.path.routes(config.DB_FILE)
     print(f"DB FILE: {db_path}")
 
     port = 8080
@@ -17,7 +15,8 @@ def main() -> None:
     print(url)
     webbrowser.open(url)
 
-    server = HTTPServer(("", port), Handler)
+    server = make_server("", port, app)
+
     try:
         server.serve_forever()
     except KeyboardInterrupt:
