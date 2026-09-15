@@ -1,158 +1,106 @@
-# web/routes/posts.py
-import os
-import subprocess
-from urllib.parse import unquote
+# web/routes/db_entry.py
+import json
+import asyncio
+from datetime import datetime, timezone
 
-from web.http_helpers import html_response, redirect, run_route
-import web.queries.posts as queries
-import web.pages.posts as pages
-from web.pages.look_up import build_lookup_page
-from db.services.posts.actions import (
-    toggle_selected as _toggle_selected,
-    delete_post as _delete_post,
-)
+from web.http_helpers import run_route
+import web.queries.posts as posts_queries
+import web.review_building as review_building
+from db.database import db
+import db.db_entry as db_entry
 
 
-def _attach_images(post):
-    post_dir = f"images/{post.get('post_id')}"
-    if os.path.isdir(post_dir):
-        post["images"] = sorted(
-            os.path.join(post_dir, f)
-            for f in os.listdir(post_dir)
-            if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
-        )
-    else:
-        post["images"] = []
-
-
-def _get_post(row_id):
-    p = queries.get_post_by_id(row_id)
-    if p:
-        _attach_images(p)
-        p["unprocessed_count"] = queries.count_unprocessed_by_author(p["author"])
-    else:
-        p = {}
-    return p, queries.get_unprocessed_ids()
-
-
-def _get_author_posts(row_id):
-    author = queries.get_author_of_post(row_id)
-    if author is None:
-        return None, None, []
-
-    all_posts = queries.get_posts_by_author_unprocessed(author)
-    if not all_posts:
-        return author, None, []
-
-    author_name = all_posts[0]["author"]
-    target = next((p for p in all_posts if p["id"] == row_id), all_posts[0])
-    _attach_images(target)
-    target["unprocessed_count"] = len(all_posts)
-
-    return author_name, target, [(p["id"], p["processed"]) for p in all_posts]
-
-
-def index(request):
-    row_id = queries.get_first_unprocessed_id()
-    if row_id:
-        return redirect(f"/post/{row_id}")
-    return html_response("<h2>All posts processed.</h2>")
-
-
-def post(request):
-    row_id = int(request["path"].split("/post/")[1])
-    p, all_rows = _get_post(row_id)
-    if not p:
-        return redirect("/")
-    html = pages.build_page(p, all_rows, mode="fifo")
-    if html is None:
-        return redirect("/")
-    return html_response(html)
-
-
-def author(request):
-    id_part = request["path"][len("/author/") :].split("/")[0]
-    if not id_part.isdigit():
-        return "404 Not Found", [("Content-Type", "text/plain")], b"Not Found"
-    row_id = int(id_part)
-
-    author_name, p, all_rows = _get_author_posts(row_id)
-    if author_name is None:
-        return "404 Not Found", [("Content-Type", "text/plain")], b"Not Found"
-    if p is None or not all_rows:
-        return html_response(f"<h2>No unprocessed posts for author: {author_name}</h2>")
-
-    html = pages.build_page(p, all_rows, mode="author", author_name=author_name)
-    if html is None:
-        return redirect("/")
-    return html_response(html)
-
-
-def lookup(request):
-    query = request["query"]
-    params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
-    raw_id = unquote(params.get("id", "")).strip()
-
-    if not raw_id:
-        return html_response(build_lookup_page())
-    if not raw_id.isdigit():
-        return html_response(
-            build_lookup_page(
-                searched_id=raw_id, error="Please enter a valid SQLite row ID."
-            )
-        )
-
-    row_id = int(raw_id)
-    p = queries.get_post_for_lookup(row_id)
-    if not p:
-        return html_response(
-            build_lookup_page(
-                searched_id=row_id,
-                error=f"No scraped post found with SQLite row ID {row_id}.",
-            )
-        )
-
-    _attach_images(p)
-    return html_response(build_lookup_page(post=p, searched_id=row_id))
-
-
-def open_folder(request):
-    post_id = unquote(request["path"][len("/open-folder/") :])
-    folder = os.path.abspath(f"images/{post_id}")
-    if os.path.isdir(folder):
-        subprocess.Popen(["xdg-open", folder])
-    return html_response(
-        "<html><body>Opening... <a href='javascript:history.back()'>Go back</a></body></html>"
+def _queue_review(row_id, candidate_property_id):
+    db.conn.execute(
+        """
+        INSERT INTO entry_review_queue (post_id, candidate_property_id, reviewed, created_at)
+        VALUES (?, ?, 0, ?)
+        """,
+        (row_id, candidate_property_id, datetime.now(timezone.utc).isoformat()),
     )
+    db.conn.commit()
 
 
-def image(request):
-    filepath = unquote(request["path"].lstrip("/"))
-    if os.path.exists(filepath):
-        with open(filepath, "rb") as f:
-            body = f.read()
-        return "200 OK", [("Content-Type", "image/jpeg")], body
-    return "404 Not Found", [("Content-Type", "text/plain")], b"Not Found"
+def _load_post_json(post_row):
+    result_json = post_row.get("extraction_result_json")
+    if not result_json:
+        raise ValueError("no extraction result (extraction_result_json) for this post")
+    parsed = json.loads(result_json)
+    if not parsed.get("relevant"):
+        raise ValueError("extraction marked this post as not relevant")
+    return parsed
 
 
-def mark(request):
+def enter(request):
     def _do(data):
-        queries.update_processed(int(data["id"]), int(data["processed"]))
-        return 200, {"ok": True}
+        row_id = int(data["id"])
+
+        p = posts_queries.get_post_by_id(row_id)
+        if not p:
+            p = review_building.get_building_review_post(row_id)
+        if not p:
+            raise ValueError(f"post {row_id} not found or already processed")
+
+        post_json = _load_post_json(p)
+        decision, candidate_property_id = asyncio.run(
+            db_entry.enter_post(
+                post_json, p["author"], p["post_url"], p["text"], p["scraped_at"]
+            )
+        )
+
+        if decision == "discard":
+            posts_queries.update_processed(row_id, 1)
+            return 200, {"ok": True, "discarded": True}
+
+        if decision == "review":
+            _queue_review(row_id, candidate_property_id)
+            posts_queries.update_processed(row_id, 1)
+            return 200, {
+                "ok": True,
+                "sent_to_review": True,
+                "candidate_property_id": candidate_property_id,
+            }
+
+        posts_queries.update_processed(row_id, 1)
+        posts_queries.toggle_selected(row_id, 1)
+        return 200, {"ok": True, "property_id": candidate_property_id}
 
     return run_route(_do, request)
 
 
-def toggle_selected(request):
+def enter_building(request):
     def _do(data):
-        _toggle_selected(int(data["id"]), int(data["selected"]))
-        return 200, {"ok": True}
+        row_id = int(data["id"])
 
-    return run_route(_do, request)
+        p = review_building.get_building_review_post(row_id)
+        if not p:
+            raise ValueError(f"post {row_id} not in building review queue")
 
+        post_json = _load_post_json(p)
+        decision, candidate_property_id = asyncio.run(
+            db_entry.enter_post(
+                post_json, p["author"], p["post_url"], p["text"], p["scraped_at"]
+            )
+        )
 
-def delete_post(request):
-    def _do(data):
-        return 200, {"ok": _delete_post(int(data["id"]))}
+        db.conn.execute(
+            "UPDATE posts SET processed = 1, review_building = 0 WHERE id = ?",
+            (row_id,),
+        )
+        db.conn.commit()
+
+        if decision == "discard":
+            return 200, {"ok": True, "discarded": True}
+
+        if decision == "review":
+            _queue_review(row_id, candidate_property_id)
+            return 200, {
+                "ok": True,
+                "sent_to_review": True,
+                "candidate_property_id": candidate_property_id,
+            }
+
+        posts_queries.toggle_selected(row_id, 1)
+        return 200, {"ok": True, "property_id": candidate_property_id}
 
     return run_route(_do, request)
