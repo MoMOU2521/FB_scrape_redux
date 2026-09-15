@@ -7,7 +7,7 @@ from web.app import app
 
 
 def main() -> None:
-    db_path = os.path.routes(config.DB_FILE)
+    db_path = os.path.abspath(config.DB_FILE)
     print(f"DB FILE: {db_path}")
 
     port = 8080

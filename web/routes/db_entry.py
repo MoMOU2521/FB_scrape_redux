@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from web.http_helpers import run_route
 import web.queries.posts as posts_queries
-import web.review_building as review_building
+import web.queries.review_building as review_building_queries
 from db.database import db
 import db.db_entry as db_entry
 
@@ -37,7 +37,7 @@ def enter(request):
 
         p = posts_queries.get_post_by_id(row_id)
         if not p:
-            p = review_building.get_building_review_post(row_id)
+            p = review_building_queries.get_building_review_post(row_id)
         if not p:
             raise ValueError(f"post {row_id} not found or already processed")
 
@@ -72,7 +72,7 @@ def enter_building(request):
     def _do(data):
         row_id = int(data["id"])
 
-        p = review_building.get_building_review_post(row_id)
+        p = review_building_queries.get_building_review_post(row_id)
         if not p:
             raise ValueError(f"post {row_id} not in building review queue")
 

@@ -3,14 +3,16 @@ import os
 import json
 import time
 
-from db.database import LocalDatabase
+from db.database import db
 from ai.pipeline_router import PipelineRouter
 from ai.groq_ai_client import GroqAIClient
 from ai.config import (
     EXTRACTION_PROMPT_VERSION,
     EXTRACTION_MODEL,
 )
-
+from db.services.posts.processing import (
+    get_next_unprocessed_for_extraction,
+)
 from db.services.ai_processing.save_result import (
     save_extraction_result,
 )
@@ -33,7 +35,7 @@ def run_extraction():
 
     try:
         while True:
-            post = db.get_next_unprocessed_for_extraction()
+            post = get_next_unprocessed_for_extraction()
             if post is None:
                 print("No posts available for extraction.")
                 break
@@ -104,7 +106,6 @@ def run_extraction():
             )
 
             save_extraction_result(
-                db,
                 post["id"],
                 json.dumps(parsed, indent=2, ensure_ascii=False),
                 reasoning=tagged_reasoning,

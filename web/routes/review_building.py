@@ -3,7 +3,8 @@ import json
 import asyncio
 
 from web.http_helpers import html_response, redirect, run_route
-import web.review_building as review_building
+import web.queries.review_building as queries
+import web.pages.review_building as pages
 from db.database import db
 from db.db_supabase import get_session
 from db.services.db_entry.resolve_or_create_owner import resolve_or_create_owner
@@ -13,7 +14,7 @@ from db.services.db_entry.enter_post_with_known_building import (
 
 
 def index(request):
-    first_id = review_building.get_first_pending_building_id()
+    first_id = queries.get_first_pending_building_id()
     if first_id:
         return redirect(f"/review-building/{first_id}")
     return html_response("<h2>No pending building reviews.</h2>")
@@ -21,10 +22,10 @@ def index(request):
 
 def post(request):
     review_id = int(request["path"].split("/review-building/")[1])
-    all_ids = review_building.get_pending_building_ids()
+    all_ids = queries.get_pending_building_ids()
     if review_id not in all_ids:
         return redirect("/review-building")
-    html = review_building.build_page(review_id, all_ids)
+    html = pages.build_page(review_id, all_ids)
     if html is None:
         return redirect("/review-building")
     return html_response(html)
@@ -35,7 +36,7 @@ def assign(request):
         post_id = int(data["post_id"])
         building_id = int(data["building_id"])
 
-        p = review_building.get_building_review_post(post_id)
+        p = queries.get_building_review_post(post_id)
         if not p:
             raise ValueError(f"Post {post_id} not in building review queue")
 

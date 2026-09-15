@@ -28,7 +28,7 @@ def run_gate1():
 
     try:
         while True:
-            post = get_next_unprocessed_ai(db)
+            post = get_next_unprocessed_ai()
             if post is None:
                 print("No posts remaining.")
                 break

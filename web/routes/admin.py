@@ -2,30 +2,32 @@
 import asyncio
 
 from web.http_helpers import html_response, run_route
-import web.stats as stats_svc
-import web.blacklist as blacklist_svc
-import web.filters as filters_svc
+import web.pages.stats as stats_pages
+import web.queries.blacklist as blacklist_queries
+import web.pages.blacklist as blacklist_pages
+import web.queries.filters as filters_queries
+import web.pages.filters as filters_pages
 from web.building_alias import add_building_alias
 from db.helpers import normalize_author
 
 
 def stats(request):
-    return html_response(stats_svc.build_stats_page())
+    return html_response(stats_pages.build_stats_page())
 
 
 def authors(request):
-    return html_response(stats_svc.build_authors_page())
+    return html_response(stats_pages.build_authors_page())
 
 
 def blacklist(request):
     query = request["query"]
     params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
     sort = params.get("sort", "count")
-    return html_response(blacklist_svc.build_blacklist_page(sort))
+    return html_response(blacklist_pages.build_blacklist_page(sort))
 
 
 def filters(request):
-    return html_response(filters_svc.build_filters_page())
+    return html_response(filters_pages.build_filters_page())
 
 
 def add_alias(request):
@@ -46,7 +48,7 @@ def add_blacklist(request):
         if not author:
             raise ValueError("Missing author")
         author = normalize_author(author)
-        inserted, updated = blacklist_svc.add_blacklist(author)
+        inserted, updated = blacklist_queries.add_blacklist(author)
         return 200, {"ok": True, "inserted": inserted, "skipped": updated}
 
     return run_route(_do, request)
@@ -58,7 +60,7 @@ def delete_blacklist(request):
         if not author:
             raise ValueError("Missing author")
         author = normalize_author(author)
-        blacklist_svc.delete_blacklist(author)
+        blacklist_queries.delete_blacklist(author)
         return 200, {"ok": True}
 
     return run_route(_do, request)
@@ -69,9 +71,9 @@ def add_filter(request):
         phrase = data.get("phrase", "").strip()
         if not phrase:
             raise ValueError("Missing phrase")
-        if filters_svc.filter_phrase_exists(phrase):
+        if filters_queries.filter_phrase_exists(phrase):
             return 200, {"ok": True, "already_exists": True}
-        filters_svc.add_filter_phrase(phrase)
+        filters_queries.add_filter_phrase(phrase)
         return 200, {"ok": True, "already_exists": False}
 
     return run_route(_do, request)
@@ -82,7 +84,7 @@ def delete_filter(request):
         phrase = data.get("phrase", "").strip()
         if not phrase:
             raise ValueError("Missing phrase")
-        filters_svc.delete_filter_phrase(phrase)
+        filters_queries.delete_filter_phrase(phrase)
         return 200, {"ok": True}
 
     return run_route(_do, request)

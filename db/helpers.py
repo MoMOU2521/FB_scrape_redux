@@ -20,18 +20,18 @@ def normalize_phone_th(raw: str) -> str:
     return s
 
 
-def _build_contact_list(gate1_contacts: list[dict], author: str) -> list[dict]:
-    contacts = list(gate1_contacts)
-    if author and author != "Anonymous":
-        contacts.append(
-            {
-                "contact_name": None,
-                "contact_type": "facebook",
-                "contact_value": author,
-                "contact_note": None,
-            }
-        )
-    return contacts
+# def _build_contact_list(gate1_contacts: list[dict], author: str) -> list[dict]:
+#     contacts = list(gate1_contacts)
+#     if author and author != "Anonymous":
+#         contacts.append(
+#             {
+#                 "contact_name": None,
+#                 "contact_type": "facebook",
+#                 "contact_value": author,
+#                 "contact_note": None,
+#             }
+#         )
+#     return contacts
 
 
 def normalize_author(author):

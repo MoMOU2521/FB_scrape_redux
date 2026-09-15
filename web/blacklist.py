@@ -1,92 +1,92 @@
-# web.blacklist.py
-from db.database import db
-from db.helpers import normalize_author
-from web.templates import BLACKLIST_TEMPLATE
+# # web.blacklist.py
+# from db.database import db
+# from db.helpers import normalize_author
+# from web.templates import BLACKLIST_TEMPLATE
 
-# ============================================================================
-# QUERIES
-# ============================================================================
-
-
-def is_blacklisted(author: str) -> bool:
-    author = normalize_author(author)
-    row = db.cur.execute(
-        "SELECT count FROM blacklist WHERE author = ?", (author,)
-    ).fetchone()
-    return row is not None
+# # ============================================================================
+# # QUERIES
+# # ============================================================================
 
 
-def increment_blacklist(author: str):
-    author = normalize_author(author)
-    db.cur.execute(
-        "INSERT INTO blacklist (author, count) VALUES (?, 1) "
-        "ON CONFLICT(author) DO UPDATE SET count = count + 1",
-        (author,),
-    )
-    db.conn.commit()
+# def is_blacklisted(author: str) -> bool:
+#     author = normalize_author(author)
+#     row = db.cur.execute(
+#         "SELECT count FROM blacklist WHERE author = ?", (author,)
+#     ).fetchone()
+#     return row is not None
 
 
-def add_blacklist(author: str):
-    author = normalize_author(author)
-    db.cur.execute(
-        "INSERT OR IGNORE INTO blacklist (author, count) VALUES (?, 0)",
-        (author,),
-    )
-    inserted = db.cur.rowcount > 0
-    db.cur.execute(
-        "UPDATE posts SET processed = 1 WHERE author = ? AND (processed = 0 OR processed IS NULL)",
-        (author,),
-    )
-    updated = db.cur.rowcount
-    db.conn.commit()
-    return inserted, updated
+# def increment_blacklist(author: str):
+#     author = normalize_author(author)
+#     db.cur.execute(
+#         "INSERT INTO blacklist (author, count) VALUES (?, 1) "
+#         "ON CONFLICT(author) DO UPDATE SET count = count + 1",
+#         (author,),
+#     )
+#     db.conn.commit()
 
 
-def get_blacklist_counts(authors):
-    authors = [normalize_author(a) for a in authors]
-    placeholders = ",".join("?" * len(authors))
-    rows = db.cur.execute(
-        f"SELECT author, count FROM blacklist WHERE author IN ({placeholders})",
-        tuple(authors),
-    ).fetchall()
-    return {author: count for author, count in rows}
+# def add_blacklist(author: str):
+#     author = normalize_author(author)
+#     db.cur.execute(
+#         "INSERT OR IGNORE INTO blacklist (author, count) VALUES (?, 0)",
+#         (author,),
+#     )
+#     inserted = db.cur.rowcount > 0
+#     db.cur.execute(
+#         "UPDATE posts SET processed = 1 WHERE author = ? AND (processed = 0 OR processed IS NULL)",
+#         (author,),
+#     )
+#     updated = db.cur.rowcount
+#     db.conn.commit()
+#     return inserted, updated
 
 
-def get_blacklist_rows(sort="count"):
-    if sort == "alpha":
-        query = "SELECT author, count FROM blacklist ORDER BY author"
-    else:
-        query = "SELECT author, count FROM blacklist ORDER BY count DESC, author"
-    return db.cur.execute(query).fetchall()
+# def get_blacklist_counts(authors):
+#     authors = [normalize_author(a) for a in authors]
+#     placeholders = ",".join("?" * len(authors))
+#     rows = db.cur.execute(
+#         f"SELECT author, count FROM blacklist WHERE author IN ({placeholders})",
+#         tuple(authors),
+#     ).fetchall()
+#     return {author: count for author, count in rows}
 
 
-def delete_blacklist(author: str):
-    db.cur.execute("DELETE FROM blacklist WHERE author = ?", (author,))
-    db.conn.commit()
+# def get_blacklist_rows(sort="count"):
+#     if sort == "alpha":
+#         query = "SELECT author, count FROM blacklist ORDER BY author"
+#     else:
+#         query = "SELECT author, count FROM blacklist ORDER BY count DESC, author"
+#     return db.cur.execute(query).fetchall()
 
 
-# ============================================================================
-# PAGE ASSEMBLY
-# ============================================================================
+# def delete_blacklist(author: str):
+#     db.cur.execute("DELETE FROM blacklist WHERE author = ?", (author,))
+#     db.conn.commit()
 
 
-def build_blacklist_page(sort="count"):
-    rows = get_blacklist_rows(sort)
+# # ============================================================================
+# # PAGE ASSEMBLY
+# # ============================================================================
 
-    if not rows:
-        rows_html = (
-            '<tr><td colspan="3" class="empty-msg">No blacklisted authors.</td></tr>'
-        )
-    else:
-        rows_html = ""
-        for author, count in rows:
-            escaped_author = author.replace("'", "\\'").replace('"', '\\"')
-            rows_html += f"""
-            <tr>
-                <td>{author}</td>
-                <td>{count}</td>
-                <td><button class="delete-btn" onclick="deleteBlacklist('{escaped_author}')">Delete</button></td>
-            </tr>
-            """
 
-    return BLACKLIST_TEMPLATE % {"rows": rows_html}
+# def build_blacklist_page(sort="count"):
+#     rows = get_blacklist_rows(sort)
+
+#     if not rows:
+#         rows_html = (
+#             '<tr><td colspan="3" class="empty-msg">No blacklisted authors.</td></tr>'
+#         )
+#     else:
+#         rows_html = ""
+#         for author, count in rows:
+#             escaped_author = author.replace("'", "\\'").replace('"', '\\"')
+#             rows_html += f"""
+#             <tr>
+#                 <td>{author}</td>
+#                 <td>{count}</td>
+#                 <td><button class="delete-btn" onclick="deleteBlacklist('{escaped_author}')">Delete</button></td>
+#             </tr>
+#             """
+
+#     return BLACKLIST_TEMPLATE % {"rows": rows_html}
