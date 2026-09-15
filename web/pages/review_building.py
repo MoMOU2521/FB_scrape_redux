@@ -1,32 +1,12 @@
 # web.pages.review_building.py
-import os
-import asyncio
-
-import web.queries.review_building as queries
 from web.templates import PAGE_TEMPLATE
-from web.building_alias import get_building_names
 
 
-def _attach_images(post):
-    post_dir = f"images/{post['post_id']}"
-    if os.path.isdir(post_dir):
-        post["images"] = sorted(
-            [
-                os.path.join(post_dir, f)
-                for f in os.listdir(post_dir)
-                if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
-            ]
-        )
-    else:
-        post["images"] = []
-
-
-def build_page(post_id: int, all_ids: list):
-    post = queries.get_building_review_post(post_id)
+def build_page(post, all_ids: list, building_options: str = ""):
     if not post:
         return None
 
-    _attach_images(post)
+    post_id = post["id"]
 
     current_idx = next((i for i, rid in enumerate(all_ids) if rid == post_id), None)
     if current_idx is None:
@@ -50,11 +30,6 @@ def build_page(post_id: int, all_ids: list):
         else "<button disabled>Next →</button>"
     )
 
-    building_rows = asyncio.run(get_building_names())
-    building_options = "\n".join(
-        f'<option value="{bid}">{name}</option>' for bid, name in building_rows
-    )
-
     dismiss_button = f"""
     <div class="action-row">
         <button class="btn-dismiss" onclick="dismissBuilding({post_id})" style="background: #f44336; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
@@ -63,10 +38,6 @@ def build_page(post_id: int, all_ids: list):
         <span id="dismiss-feedback" class="feedback"></span>
     </div>
     """
-
-    images_html = ""
-    for img_path in post.get("images", []):
-        images_html += f'<img src="/{img_path}" alt="">\n'
 
     return PAGE_TEMPLATE % {
         "page_title": "Building Review Queue",
@@ -84,7 +55,7 @@ def build_page(post_id: int, all_ids: list):
         "extraction_reasoning": post.get("extraction_reasoning")
         or "No reasoning recorded.",
         "extraction_prompt_version": post.get("extraction_prompt_version") or "unknown",
-        "images": images_html,
+        "images": "",
         "row_id": post_id,
         "checked": "checked",
         "selected_checked": "checked" if post.get("selected", 0) else "",

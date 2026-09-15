@@ -5,6 +5,7 @@ import asyncio
 from web.http_helpers import html_response, redirect, run_route
 import web.queries.review_building as queries
 import web.pages.review_building as pages
+from web.building_alias import get_building_names
 from db.database import db
 from db.db_supabase import get_session
 from db.services.db_entry.resolve_or_create_owner import resolve_or_create_owner
@@ -25,7 +26,13 @@ def post(request):
     all_ids = queries.get_pending_building_ids()
     if review_id not in all_ids:
         return redirect("/review-building")
-    html = pages.build_page(review_id, all_ids)
+
+    p = queries.get_building_review_post(review_id)
+    if not p:
+        return redirect("/review-building")
+
+    building_options = asyncio.run(get_building_names())
+    html = pages.build_page(p, all_ids, building_options=building_options)
     if html is None:
         return redirect("/review-building")
     return html_response(html)

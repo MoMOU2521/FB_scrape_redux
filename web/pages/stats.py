@@ -1,6 +1,5 @@
 # web.pages.stats.py
 import web.queries.stats as queries
-import web.queries.posts as posts_queries
 from web.templates import STATS_TEMPLATE, AUTHOR_LIST_TEMPLATE
 
 
@@ -43,16 +42,14 @@ def build_authors_page():
         rows_html = '<tr><td colspan="4" class="empty-msg">No authors with more than 1 unprocessed post.</td></tr>'
     else:
         rows_html = ""
-        for idx, (author, count) in enumerate(rows, 1):
-            row_id = posts_queries.get_first_unprocessed_id_for_author(author)
-            if row_id:
-                rows_html += f"""
-                <tr>
-                    <td>{idx}</td>
-                    <td>{author}</td>
-                    <td><span class="count-badge">{count}</span></td>
-                    <td><a href="/author/{row_id}" class="author-link">View posts →</a></td>
-                </tr>
-                """
+        for idx, (author, count, row_id) in enumerate(rows, 1):
+            rows_html += f"""
+            <tr>
+                <td>{idx}</td>
+                <td>{author}</td>
+                <td><span class="count-badge">{count}</span></td>
+                <td><a href="/author/{row_id}" class="author-link">View posts →</a></td>
+            </tr>
+            """
 
     return AUTHOR_LIST_TEMPLATE % {"rows": rows_html}

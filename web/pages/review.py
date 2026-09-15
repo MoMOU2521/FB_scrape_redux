@@ -1,13 +1,12 @@
 # web.pages.review.py
-import web.queries.review as queries
 from web.templates import REVIEW_TEMPLATE
 
 
-def build_page(review_id: int, all_ids: list):
-    row = queries.get_review_row(review_id)
+def build_page(row, all_ids: list):
     if not row:
         return None
 
+    review_id = row["review_id"]
     current_idx = next((i for i, rid in enumerate(all_ids) if rid == review_id), None)
     if current_idx is None:
         return None

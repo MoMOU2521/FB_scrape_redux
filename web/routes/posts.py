@@ -1,5 +1,6 @@
 # web/routes/posts.py
 import os
+import asyncio
 import subprocess
 from urllib.parse import unquote
 
@@ -7,28 +8,17 @@ from web.http_helpers import html_response, redirect, run_route
 import web.queries.posts as queries
 import web.pages.posts as pages
 from web.pages.look_up import build_lookup_page
+from web.building_alias import get_building_names
 from db.services.posts.actions import (
     toggle_selected as _toggle_selected,
     delete_post as _delete_post,
 )
 
 
-def _attach_images(post):
-    post_dir = f"images/{post.get('post_id')}"
-    if os.path.isdir(post_dir):
-        post["images"] = sorted(
-            os.path.join(post_dir, f)
-            for f in os.listdir(post_dir)
-            if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
-        )
-    else:
-        post["images"] = []
-
-
 def _get_post(row_id):
     p = queries.get_post_by_id(row_id)
     if p:
-        _attach_images(p)
+        p = dict(p)
         p["unprocessed_count"] = queries.count_unprocessed_by_author(p["author"])
     else:
         p = {}
@@ -45,8 +35,7 @@ def _get_author_posts(row_id):
         return author, None, []
 
     author_name = all_posts[0]["author"]
-    target = next((p for p in all_posts if p["id"] == row_id), all_posts[0])
-    _attach_images(target)
+    target = dict(next((p for p in all_posts if p["id"] == row_id), all_posts[0]))
     target["unprocessed_count"] = len(all_posts)
 
     return author_name, target, [(p["id"], p["processed"]) for p in all_posts]
@@ -64,7 +53,8 @@ def post(request):
     p, all_rows = _get_post(row_id)
     if not p:
         return redirect("/")
-    html = pages.build_page(p, all_rows, mode="fifo")
+    building_options = asyncio.run(get_building_names())
+    html = pages.build_page(p, all_rows, mode="fifo", building_options=building_options)
     if html is None:
         return redirect("/")
     return html_response(html)
@@ -82,7 +72,14 @@ def author(request):
     if p is None or not all_rows:
         return html_response(f"<h2>No unprocessed posts for author: {author_name}</h2>")
 
-    html = pages.build_page(p, all_rows, mode="author", author_name=author_name)
+    building_options = asyncio.run(get_building_names())
+    html = pages.build_page(
+        p,
+        all_rows,
+        mode="author",
+        author_name=author_name,
+        building_options=building_options,
+    )
     if html is None:
         return redirect("/")
     return html_response(html)
@@ -112,7 +109,6 @@ def lookup(request):
             )
         )
 
-    _attach_images(p)
     return html_response(build_lookup_page(post=p, searched_id=row_id))
 
 

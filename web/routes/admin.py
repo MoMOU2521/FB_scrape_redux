@@ -23,11 +23,13 @@ def blacklist(request):
     query = request["query"]
     params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
     sort = params.get("sort", "count")
-    return html_response(blacklist_pages.build_blacklist_page(sort))
+    rows = blacklist_queries.get_blacklist_rows(sort)
+    return html_response(blacklist_pages.build_blacklist_page(rows))
 
 
 def filters(request):
-    return html_response(filters_pages.build_filters_page())
+    rows = filters_queries.get_filter_rows()
+    return html_response(filters_pages.build_filters_page(rows))
 
 
 def add_alias(request):

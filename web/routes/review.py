@@ -17,7 +17,10 @@ def post(request):
     all_ids = queries.get_pending_review_ids()
     if review_id not in all_ids:
         return redirect("/review")
-    html = pages.build_page(review_id, all_ids)
+    row = queries.get_review_row(review_id)
+    if row is None:
+        return redirect("/review")
+    html = pages.build_page(row, all_ids)
     if html is None:
         return redirect("/review")
     return html_response(html)

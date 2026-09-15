@@ -13,7 +13,7 @@ def index(request):
 
 def post(request):
     row_id = int(request["path"].split("/processed/")[1])
-    p, all_rows = pages.get_post(row_id)
+    p, all_rows = queries.get_post_with_context(row_id)
     if not p:
         return redirect("/processed")
     html = pages.build_page(p, all_rows, mode="processed")
@@ -28,7 +28,7 @@ def author(request):
         return "404 Not Found", [("Content-Type", "text/plain")], b"Not Found"
     row_id = int(id_part)
 
-    author_name, p, all_rows = pages.get_author_posts_by_row_id(row_id)
+    author_name, p, all_rows = queries.get_author_context(row_id)
     if author_name is None:
         return "404 Not Found", [("Content-Type", "text/plain")], b"Not Found"
     if p is None or not all_rows:

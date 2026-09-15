@@ -22,6 +22,7 @@ def get_authors_by_unprocessed_count(min_count=2):
         SELECT
             author,
             COUNT(*) as unprocessed_count
+            MIN(id) as first_unprocessed_id
         FROM posts
         WHERE (processed = 0 OR processed IS NULL)
         GROUP BY author

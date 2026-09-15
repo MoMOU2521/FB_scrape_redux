@@ -1,11 +1,8 @@
 # web.pages.blacklist.py
-import web.queries.blacklist as queries
 from web.templates import BLACKLIST_TEMPLATE
 
 
-def build_blacklist_page(sort="count"):
-    rows = queries.get_blacklist_rows(sort)
-
+def build_blacklist_page(rows):
     if not rows:
         rows_html = (
             '<tr><td colspan="3" class="empty-msg">No blacklisted authors.</td></tr>'

@@ -1,11 +1,8 @@
 # web.pages.posts.py
-import asyncio
-
 from web.templates import PAGE_TEMPLATE
-from web.building_alias import get_building_names
 
 
-def build_page(post, all_rows, mode="fifo", author_name=None):
+def build_page(post, all_rows, mode="fifo", author_name=None, building_options=""):
     if not post or not all_rows:
         return None
 
@@ -19,10 +16,6 @@ def build_page(post, all_rows, mode="fifo", author_name=None):
     prev_id = all_rows[current_idx - 1][0] if current_idx > 0 else None
     next_id = all_rows[current_idx + 1][0] if current_idx < total - 1 else None
     _, processed = all_rows[current_idx]
-
-    images_html = ""
-    for img_path in post.get("images", []):
-        images_html += f'<img src="/{img_path}" alt="">\n'
 
     if mode == "author":
         prev_url = f"/author/{prev_id}" if prev_id else None
@@ -45,10 +38,6 @@ def build_page(post, all_rows, mode="fifo", author_name=None):
         if next_url
         else "<button disabled>Next →</button>"
     )
-    building_rows = asyncio.run(get_building_names())
-    building_options = "\n".join(
-        f'<option value="{bid}">{name}</option>' for bid, name in building_rows
-    )
 
     return PAGE_TEMPLATE % {
         "page_title": (
@@ -70,7 +59,7 @@ def build_page(post, all_rows, mode="fifo", author_name=None):
         "extraction_reasoning": post.get("extraction_reasoning")
         or "No reasoning recorded.",
         "extraction_prompt_version": post.get("extraction_prompt_version") or "unknown",
-        "images": images_html,
+        "images": "",
         "row_id": post.get("id", 0),
         "checked": "checked" if processed else "",
         "selected_checked": "checked" if post.get("selected", 0) else "",

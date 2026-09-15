@@ -1,11 +1,8 @@
 # web.pages.filters.py
-import web.queries.filters as queries
 from web.templates import FILTERS_TEMPLATE
 
 
-def build_filters_page():
-    rows = queries.get_filter_rows()
-
+def build_filters_page(rows):
     if not rows:
         rows_html = '<tr><td colspan="3" class="empty-msg">No filter phrases.</td></tr>'
     else:

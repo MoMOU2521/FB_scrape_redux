@@ -1,71 +1,5 @@
 # web.pages.processed.py
-import os
-import asyncio
-
-import web.queries.processed as queries
 from web.templates import PAGE_TEMPLATE
-from web.building_alias import get_building_names
-
-
-def _attach_images(post):
-    """Attach image list to a post dict."""
-    post_dir = f"images/{post['post_id']}"
-    if os.path.isdir(post_dir):
-        post["images"] = sorted(
-            [
-                os.path.join(post_dir, f)
-                for f in os.listdir(post_dir)
-                if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
-            ]
-        )
-    else:
-        post["images"] = []
-
-
-def get_post(row_id):
-    """Fetch a processed post and the full processed list for navigation."""
-    post = queries.get_post_by_id(row_id)
-
-    if post:
-        _attach_images(post)
-        post["processed_count"] = queries.count_processed_by_author(post["author"])
-    else:
-        post = {}
-
-    all_rows = queries.get_processed_ids()
-    return post, all_rows
-
-
-def get_author_posts_by_row_id(row_id):
-    """
-    Given a row id, resolve the author and fetch all processed posts by that author.
-    Used for author-mode navigation within processed view.
-    """
-    author = queries.get_author_of_post(row_id)
-    if author is None:
-        return None, None, []
-
-    all_posts = queries.get_posts_by_author_processed(author)
-
-    if not all_posts:
-        return author, None, []
-
-    author_name = all_posts[0]["author"]
-
-    target_post = None
-    for p in all_posts:
-        if p["id"] == row_id:
-            target_post = p
-            break
-    if target_post is None:
-        target_post = all_posts[0]
-
-    _attach_images(target_post)
-    target_post["processed_count"] = len(all_posts)
-
-    all_rows = [(p["id"], p["processed"]) for p in all_posts]
-
-    return author_name, target_post, all_rows
 
 
 def build_page(post, all_rows, mode="processed", author_name=None):
@@ -90,10 +24,6 @@ def build_page(post, all_rows, mode="processed", author_name=None):
     total = len(all_rows)
     prev_id = all_rows[current_idx - 1][0] if current_idx > 0 else None
     next_id = all_rows[current_idx + 1][0] if current_idx < total - 1 else None
-
-    images_html = ""
-    for img_path in post.get("images", []):
-        images_html += f'<img src="/{img_path}" alt="">\n'
 
     if mode == "author":
         prev_url = f"/processed/author/{prev_id}" if prev_id else None
@@ -122,11 +52,6 @@ def build_page(post, all_rows, mode="processed", author_name=None):
         else "<button disabled>Next →</button>"
     )
 
-    building_rows = asyncio.run(get_building_names())
-    building_options = "\n".join(
-        f'<option value="{bid}">{name}</option>' for bid, name in building_rows
-    )
-
     page_title = (
         "Processed Posts"
         if mode == "processed"
@@ -149,7 +74,7 @@ def build_page(post, all_rows, mode="processed", author_name=None):
         "extraction_reasoning": post.get("extraction_reasoning")
         or "No reasoning recorded.",
         "extraction_prompt_version": post.get("extraction_prompt_version") or "unknown",
-        "images": images_html,
+        "images": "",
         "row_id": post.get("id", 0),
         "checked": "checked",
         "selected_checked": "checked" if post.get("selected", 0) else "",
@@ -158,7 +83,7 @@ def build_page(post, all_rows, mode="processed", author_name=None):
         "unprocessed_count": 0,
         "back_button": back_button,
         "author_button": author_button,
-        "building_options": building_options,
+        "building_options": "",
         "building_name": "",
         "dismiss_button": "",
     }

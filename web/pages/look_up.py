@@ -3,12 +3,6 @@ from web.templates import POST_LOOKUP_TEMPLATE
 
 
 def build_lookup_page(post=None, searched_id=None, error=None):
-    images_html = ""
-
-    if post:
-        for img_path in post.get("images", []):
-            images_html += f'<img src="/{img_path}" alt="">\n'
-
     return POST_LOOKUP_TEMPLATE % {
         "searched_id": "" if searched_id is None else str(searched_id),
         "error": error or "",
@@ -42,5 +36,5 @@ def build_lookup_page(post=None, searched_id=None, error=None):
         "extraction_prompt_version": (
             post.get("extraction_prompt_version") or "unknown" if post else ""
         ),
-        "images": images_html,
+        "images": "",
     }

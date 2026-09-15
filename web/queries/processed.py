@@ -85,3 +85,36 @@ def count_processed_by_author(author: str) -> int:
         (author,),
     ).fetchone()
     return row[0]
+
+
+def get_post_with_context(row_id):
+    """Fetch a processed post plus its per-author count and the full
+    processed list for navigation."""
+    post = get_post_by_id(row_id)
+    if post:
+        post = dict(post)
+        post["processed_count"] = count_processed_by_author(post["author"])
+    else:
+        post = {}
+    all_rows = get_processed_ids()
+    return post, all_rows
+
+
+def get_author_context(row_id):
+    """Given a row id, resolve the author and fetch all processed posts
+    by that author, for author-mode navigation."""
+    author = get_author_of_post(row_id)
+    if author is None:
+        return None, None, []
+
+    all_posts = get_posts_by_author_processed(author)
+    if not all_posts:
+        return author, None, []
+
+    author_name = all_posts[0]["author"]
+    target_post = next((p for p in all_posts if p["id"] == row_id), all_posts[0])
+    target_post = dict(target_post)
+    target_post["processed_count"] = len(all_posts)
+
+    all_rows = [(p["id"], p["processed"]) for p in all_posts]
+    return author_name, target_post, all_rows
