@@ -23,16 +23,21 @@ def increment_blacklist(author: str):
 
 def add_blacklist(author: str):
     author = normalize_author(author)
-    db.cur.execute(
+
+    cur = db.cur
+    cur.execute(
         "INSERT OR IGNORE INTO blacklist (author, count) VALUES (?, 0)",
         (author,),
     )
-    inserted = db.cur.rowcount > 0
-    db.cur.execute(
+    inserted = cur.rowcount > 0
+
+    cur2 = db.cur
+    cur2.execute(
         "UPDATE posts SET processed = 1 WHERE author = ? AND (processed = 0 OR processed IS NULL)",
         (author,),
     )
-    updated = db.cur.rowcount
+    updated = cur2.rowcount
+
     db.conn.commit()
     return inserted, updated
 

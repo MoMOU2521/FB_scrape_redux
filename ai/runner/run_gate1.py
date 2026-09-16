@@ -51,13 +51,13 @@ def run_gate1():
             except json.JSONDecodeError:
                 print("JSON parse error")
                 mark_ai_processed(post["id"])
+                continue
 
             tagged_reasoning = (
                 f"[model: {router.gate1_ai.model}]\n{result['reasoning']}"
             )
 
             save_gate1_result(
-                db,
                 post["id"],
                 json.dumps(parsed, indent=2, ensure_ascii=False),
                 reasoning=tagged_reasoning,

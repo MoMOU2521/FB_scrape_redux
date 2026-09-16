@@ -17,21 +17,20 @@ def get_group_stats():
 
 
 def get_authors_by_unprocessed_count(min_count=2):
-    db.cur.execute(
+    return db.cur.execute(
         """
         SELECT
             author,
-            COUNT(*) as unprocessed_count
+            COUNT(*) as unprocessed_count,
             MIN(id) as first_unprocessed_id
         FROM posts
         WHERE (processed = 0 OR processed IS NULL)
         GROUP BY author
         HAVING COUNT(*) > ?
         ORDER BY unprocessed_count DESC
-    """,
+        """,
         (min_count,),
-    )
-    return db.cur.fetchall()
+    ).fetchall()
 
 
 def get_next_unprocessed_ai():

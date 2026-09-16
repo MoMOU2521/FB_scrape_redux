@@ -1,11 +1,11 @@
 # db.services.db_entry._queue_for_review.py
 from datetime import datetime, timezone
 
-from db.database import LocalDatabase
+from db.database import db
 
 
 def _queue_for_review(row, candidate_property_id=None):
-    LocalDatabase.cur.execute(
+    db.cur.execute(
         """
         INSERT INTO entry_review_queue
         (
@@ -22,4 +22,4 @@ def _queue_for_review(row, candidate_property_id=None):
             datetime.now(timezone.utc).isoformat(),
         ),
     )
-    LocalDatabase.conn.commit()
+    db.conn.commit()

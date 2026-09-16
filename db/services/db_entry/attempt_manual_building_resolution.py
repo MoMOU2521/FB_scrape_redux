@@ -1,7 +1,7 @@
 # db.services.db_entry.attempt_manual_building_resolution.py
 from ai import transliterate_pipeline
 
-from db.database import LocalDatabase
+from db.services.posts.processing import mark_review_building
 from db.services.db_entry._search_buildings_fuzzy import _search_buildings_fuzzy
 from db.services.db_entry.resolve_building_candidates import resolve_building_candidates
 from db.services.db_entry.build_building_candidates import build_building_candidates
@@ -69,7 +69,7 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
     if not candidates:
         print(f"[NO_USABLE_NAME] row={row['id']}")
 
-        LocalDatabase.mark_review_building(row["id"])
+        mark_review_building(row["id"])
         return False
 
     # --------------------------------------------------------
@@ -103,7 +103,7 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
         choice = input(f"Select search name (1-{len(candidates)}): ").strip()
 
         if choice not in [str(i) for i in range(1, len(candidates) + 1)]:
-            LocalDatabase.mark_review_building(row["id"])
+            mark_review_building(row["id"])
             return False
 
         search_name = candidates[int(choice) - 1]["name"]
@@ -120,7 +120,7 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
     if not fuzzy_candidates:
         print(f"[NO_CANDIDATES] \nrow={row['id']} " f"search_name='{search_name}'")
 
-        LocalDatabase.mark_review_building(row["id"])
+        mark_review_building(row["id"])
         return False
 
     print(f"\n[BUILDING MATCH]\nrow={row['id']}\n" f"search_name='{search_name}'")
@@ -135,7 +135,7 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
     if choice == "0" or choice not in [
         str(i) for i in range(1, len(fuzzy_candidates) + 1)
     ]:
-        LocalDatabase.mark_review_building(row["id"])
+        mark_review_building(row["id"])
         return False
 
     picked = fuzzy_candidates[int(choice) - 1]
@@ -143,8 +143,6 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
     # --------------------------------------------------------
     # Stage 6: alias
     # --------------------------------------------------------
-    # Exact fuzzy match means no alias needed.
-    # The selected building name is already the canonical name.
     if round(picked.score, 3) != 1.000:
 
         alias_candidates = [

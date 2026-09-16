@@ -1,7 +1,7 @@
 # db.services.db_entry.process_single_row.py
 import json
 
-from db.database import LocalDatabase
+from db.services.posts.processing import mark_processed
 from db.exceptions import (
     BuildingNotFoundError,
 )
@@ -22,7 +22,7 @@ async def process_single_row(row, transliterate_ai, db):
     except (json.JSONDecodeError, TypeError) as e:
         print(f"[SKIP] row={row['id']} invalid JSON: {e}")
 
-        LocalDatabase.mark_processed(row["id"])
+        mark_processed(row["id"])
         return False
 
     try:

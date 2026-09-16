@@ -5,8 +5,9 @@ from db.database import db
 
 
 def is_phrase_filtered(text: str):
-    db.cur.execute("SELECT phrase FROM filter_phrases")
-    for (phrase,) in db.cur.fetchall():
+    cur = db.cur
+    cur.execute("SELECT phrase FROM filter_phrases")
+    for (phrase,) in cur.fetchall():
         if phrase in text:
             return phrase
     return None

@@ -10,6 +10,12 @@ from db.services.db_entry.create_rent_term import create_rent_term
 from db.services.db_entry.create_sale_term import create_sale_term
 from db.services.db_entry.create_property_note import create_property_note
 from db.services.db_entry.resolve_building_id import resolve_building_id
+from db.exceptions import (
+    OwnerConflictError,
+    NoIdentifiableOwnerError,
+    BuildingConflictError,
+    BuildingNotFoundError,
+)
 
 import logging
 
