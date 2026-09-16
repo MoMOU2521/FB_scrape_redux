@@ -7,7 +7,7 @@ from wcwidth import wcswidth
 from db.database import db
 
 import scrape.config as config
-from web.blacklist import get_blacklist_counts
+from web.queries.blacklist import get_blacklist_counts
 from scrape.scraper import scrape_group
 
 
