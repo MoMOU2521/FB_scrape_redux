@@ -1,7 +1,7 @@
 # server/posts.py
 from flask import Blueprint, jsonify, request
 
-import web.queries.posts as queries
+import server.queries.posts as queries
 import server.services.posts as services
 from db.services.posts.actions import (
     toggle_selected as _toggle_selected,

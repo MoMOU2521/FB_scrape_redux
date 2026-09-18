@@ -1,5 +1,5 @@
 # server/services/posts.py
-import web.queries.posts as queries
+import server.queries.posts as queries
 
 
 def _nav_context(row_id, all_rows):
