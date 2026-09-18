@@ -10,18 +10,6 @@ from db.services.posts.actions import (
 posts_bp = Blueprint("posts", __name__, url_prefix="/api/posts")
 
 
-def _attach_images(post):
-    post_dir = f"images/{post['post_id']}"
-    if os.path.isdir(post_dir):
-        post["images"] = sorted(
-            os.path.join(post_dir, f)
-            for f in os.listdir(post_dir)
-            if f.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".webp"))
-        )
-    else:
-        post["images"] = []
-
-
 def _nav_context(row_id, all_rows):
     idx = next((i for i, (rid, _) in enumerate(all_rows) if rid == row_id), None)
     if idx is None:
@@ -50,7 +38,6 @@ def get_post(row_id):
         return jsonify({"error": "not found or already processed"}), 404
 
     post = dict(post)
-    _attach_images(post)
     post["unprocessed_count"] = queries.count_unprocessed_by_author(post["author"])
 
     all_rows = queries.get_unprocessed_ids()
@@ -70,7 +57,6 @@ def get_author_posts(row_id):
         return jsonify({"author": author, "post": None, "nav": None})
 
     target = dict(next((p for p in all_posts if p["id"] == row_id), all_posts[0]))
-    _attach_images(target)
     target["unprocessed_count"] = len(all_posts)
 
     all_rows = [(p["id"], p["processed"]) for p in all_posts]
@@ -96,10 +82,3 @@ def selected(row_id):
 @posts_bp.delete("/<int:row_id>")
 def delete(row_id):
     return jsonify({"ok": _delete_post(row_id)})
-
-
-@posts_bp.get("/images/<path:filepath>")
-def image(filepath):
-    if not os.path.exists(filepath):
-        return jsonify({"error": "not found"}), 404
-    return send_file(filepath)
