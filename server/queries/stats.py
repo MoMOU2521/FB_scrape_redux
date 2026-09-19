@@ -1,5 +1,17 @@
 # server.queries.stats.py
 from db.database import db
+from datetime import datetime, timezone
+
+
+def queue_review(post_id: int, candidate_property_id: int | None):
+    db.cur.execute(
+        """
+        INSERT INTO entry_review_queue (post_id, candidate_property_id, reviewed, created_at)
+        VALUES (?, ?, 0, ?)
+        """,
+        (post_id, candidate_property_id, datetime.now(timezone.utc).isoformat()),
+    )
+    db.conn.commit()
 
 
 def get_group_stats():

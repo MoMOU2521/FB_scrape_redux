@@ -1,6 +1,7 @@
 // frontend/src/api/posts.ts
+import { createRequest } from "./http";
 
-const BASE = "/api/posts";
+const request = createRequest("/api/posts");
 
 export interface Post {
   id: number;
@@ -37,18 +38,6 @@ export interface AuthorPosts {
   author: string;
   post: Post | null;
   nav: NavContext | null;
-}
-
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status}`);
-  }
-  return res.json();
 }
 
 export function getNextUnprocessed(): Promise<{ row_id: number | null }> {

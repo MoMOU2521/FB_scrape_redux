@@ -1,5 +1,5 @@
 # server.__init__.py
-from flask import Flask, jsonify
+from flask import Flask, app, jsonify
 from flask_cors import CORS
 
 from db.exceptions import (
@@ -10,6 +10,8 @@ from db.exceptions import (
 )
 from server.posts import posts_bp
 from server.processed import processed_bp
+from server.admin import admin_bp
+from server.entry import entry_bp
 
 
 def create_app():
@@ -18,6 +20,8 @@ def create_app():
 
     app.register_blueprint(posts_bp)
     app.register_blueprint(processed_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(entry_bp)
 
     @app.errorhandler(OwnerConflictError)
     @app.errorhandler(BuildingConflictError)

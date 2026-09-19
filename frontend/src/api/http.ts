@@ -1,0 +1,17 @@
+// frontend/src/api/http.ts
+export function createRequest(base: string) {
+  return async function request<T>(
+    path: string,
+    init?: RequestInit,
+  ): Promise<T> {
+    const res = await fetch(`${base}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...init,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error ?? `Request failed: ${res.status}`);
+    }
+    return res.json();
+  };
+}

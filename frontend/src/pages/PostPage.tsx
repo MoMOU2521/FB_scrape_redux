@@ -7,6 +7,7 @@ import { PostStatusToggles } from "@/components/posts/PostStatusToggles";
 import { ReasoningPanel } from "@/components/posts/ReasoningPanel";
 import { TextBlock } from "@/components/posts/TextBlock";
 import { AdminPanel } from "@/components/posts/AdminPanel";
+import { EnterIntoDb } from "@/components/posts/EnterIntoDb";
 import { Button } from "@/components/ui/button";
 
 export function PostPage() {
@@ -25,6 +26,11 @@ export function PostPage() {
     rowId,
     refetch,
   );
+
+  async function advance() {
+    const { row_id } = await api.getNextUnprocessed();
+    setRowId(row_id);
+  }
 
   if (initLoading || loading) return <div className="p-6">Loading…</div>;
   if (rowId == null) return <div className="p-6">All posts processed.</div>;
@@ -73,15 +79,14 @@ export function PostPage() {
         reasoning={post.extraction_reasoning}
       />
 
-      <AdminPanel author={post.author} />
+      <EnterIntoDb rowId={post.id} onDone={advance} />
+
+      <AdminPanel author={post.author} onBlacklisted={advance} />
 
       <Button
         variant="neutral"
         onClick={async () => {
-          if (await remove()) {
-            const { row_id } = await api.getNextUnprocessed();
-            setRowId(row_id);
-          }
+          if (await remove()) await advance();
         }}
       >
         Delete this post

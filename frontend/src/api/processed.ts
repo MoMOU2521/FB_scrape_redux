@@ -1,19 +1,8 @@
 // frontend/src/api/processed.ts
 import type { PostWithNav, AuthorPosts } from "./posts";
+import { createRequest } from "./http";
 
-const BASE = "/api/processed";
-
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...init,
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error ?? `Request failed: ${res.status}`);
-  }
-  return res.json();
-}
+const request = createRequest("/api/processed");
 
 export function getNextProcessed(): Promise<{ row_id: number | null }> {
   return request("/next");
