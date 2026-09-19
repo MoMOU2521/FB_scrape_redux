@@ -54,3 +54,50 @@ export function deleteFilterPhrase(phrase: string): Promise<{ ok: boolean }> {
     body: JSON.stringify({ phrase }),
   });
 }
+
+export interface GroupStatRow {
+  group_name: string;
+  total: number;
+  selected: number;
+  rate: number;
+}
+
+export interface StatsResponse {
+  groups: GroupStatRow[];
+  total_posts: number;
+  total_selected: number;
+  total_rate: number;
+}
+
+export interface AuthorRow {
+  author: string;
+  count: number;
+  first_unprocessed_id: number;
+}
+
+export interface BuildingOption {
+  id: number;
+  name: string;
+}
+
+export function getStats(): Promise<StatsResponse> {
+  return request("/stats");
+}
+
+export function getAuthors(minCount = 2): Promise<{ rows: AuthorRow[] }> {
+  return request(`/authors?min_count=${minCount}`);
+}
+
+export function getBuildings(): Promise<{ buildings: BuildingOption[] }> {
+  return request("/buildings");
+}
+
+export function addAlias(
+  buildingId: number,
+  alias: string,
+): Promise<{ ok: boolean }> {
+  return request("/add-alias", {
+    method: "POST",
+    body: JSON.stringify({ building_id: buildingId, alias }),
+  });
+}

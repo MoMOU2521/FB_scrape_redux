@@ -40,6 +40,15 @@ export interface AuthorPosts {
   nav: NavContext | null;
 }
 
+export interface LookupPost extends Post {
+  ai_processed: number;
+  review_building: number;
+}
+
+export function lookupPost(id: string): Promise<{ post: LookupPost | null }> {
+  return request(`/lookup?id=${encodeURIComponent(id)}`);
+}
+
 export function getNextUnprocessed(): Promise<{ row_id: number | null }> {
   return request("/next");
 }

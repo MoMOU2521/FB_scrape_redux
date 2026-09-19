@@ -45,3 +45,7 @@ def get_author_posts_with_nav(row_id):
     nav = _nav_context(target["id"], all_rows)
 
     return {"author": author, "post": target, "nav": nav}
+
+
+def get_post_for_lookup(row_id):
+    return queries.get_post_for_lookup(row_id)

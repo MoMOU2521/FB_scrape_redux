@@ -48,3 +48,25 @@ def selected(row_id):
 @posts_bp.delete("/<int:row_id>")
 def delete(row_id):
     return jsonify({"ok": _delete_post(row_id)})
+
+
+@posts_bp.get("/lookup")
+def lookup():
+    raw_id = request.args.get("id", "").strip()
+
+    if not raw_id:
+        return jsonify({"post": None})
+
+    if not raw_id.isdigit():
+        return jsonify({"error": "Please enter a valid SQLite row ID."}), 400
+
+    row_id = int(raw_id)
+    post = services.get_post_for_lookup(row_id)
+
+    if not post:
+        return (
+            jsonify({"error": f"No scraped post found with SQLite row ID {row_id}."}),
+            404,
+        )
+
+    return jsonify({"post": post})

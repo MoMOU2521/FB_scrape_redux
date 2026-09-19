@@ -9,17 +9,27 @@ import { TextBlock } from "@/components/posts/TextBlock";
 import { AdminPanel } from "@/components/posts/AdminPanel";
 import { EnterIntoDb } from "@/components/posts/EnterIntoDb";
 import { Button } from "@/components/ui/button";
+import { BuildingAliasPanel } from "@/components/posts/BuildingAliasPanel";
 
-export function PostPage() {
+interface PostPageProps {
+  initialAuthorRowId?: number | null;
+}
+
+export function PostPage({ initialAuthorRowId }: PostPageProps) {
   const [rowId, setRowId] = useState<number | null>(null);
   const [initLoading, setInitLoading] = useState(true);
 
   useEffect(() => {
+    if (initialAuthorRowId != null) {
+      setRowId(initialAuthorRowId);
+      setInitLoading(false);
+      return;
+    }
     api.getNextUnprocessed().then(({ row_id }) => {
       setRowId(row_id);
       setInitLoading(false);
     });
-  }, []);
+  }, [initialAuthorRowId]);
 
   const { data, loading, refetch } = usePost(rowId);
   const { markProcessed, toggleSelected, remove } = usePostActions(
@@ -83,6 +93,8 @@ export function PostPage() {
       />
 
       <EnterIntoDb rowId={post.id} onDone={advance} />
+
+      <BuildingAliasPanel />
 
       <AdminPanel author={post.author} onBlacklisted={advance} />
 
