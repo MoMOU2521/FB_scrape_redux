@@ -13,17 +13,14 @@ export function LookupPage() {
   const [id, setId] = useState("");
   const [post, setPost] = useState<LookupPost | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [searched, setSearched] = useState(false);
 
   async function search() {
     setError(null);
     try {
       const res = await api.lookupPost(id.trim());
       setPost(res.post);
-      setSearched(true);
     } catch (e) {
       setPost(null);
-      setSearched(true);
       setError((e as Error).message);
     }
   }
@@ -100,7 +97,7 @@ export function LookupPage() {
         </>
       )}
 
-      {searched && !post && !error && (
+      {!post && !error && (
         <div className="text-foreground/60">Enter a row ID to search.</div>
       )}
     </div>

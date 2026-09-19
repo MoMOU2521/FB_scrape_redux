@@ -1,9 +1,11 @@
 // frontend/src/pages/ReviewBuildingPage.tsx
 import { useEffect, useState } from "react";
 import * as api from "@/api/reviewBuilding";
+import * as postsApi from "@/api/posts";
 import { useReviewBuilding } from "@/hooks/useReviewBuilding";
 import { PostMeta } from "@/components/posts/PostMeta";
 import { PostNav } from "@/components/posts/PostNav";
+import { PostStatusToggles } from "@/components/posts/PostStatusToggles";
 import { TextBlock } from "@/components/posts/TextBlock";
 import { ReasoningPanel } from "@/components/posts/ReasoningPanel";
 import { BuildingAliasPanel } from "@/components/posts/BuildingAliasPanel";
@@ -22,7 +24,7 @@ export function ReviewBuildingPage() {
     });
   }, []);
 
-  const { data, loading } = useReviewBuilding(postId);
+  const { data, loading, refetch } = useReviewBuilding(postId);
 
   async function advance() {
     setFeedback(null);
@@ -68,6 +70,19 @@ export function ReviewBuildingPage() {
         onNext={() => nav.next_id != null && setPostId(nav.next_id)}
       />
 
+      <PostStatusToggles
+        processed={!!post.processed}
+        selected={!!post.selected}
+        onProcessedChange={async (c) => {
+          await postsApi.markProcessed(post.id, c ? 1 : 0);
+          await advance();
+        }}
+        onSelectedChange={async (c) => {
+          await postsApi.toggleSelected(post.id, c ? 1 : 0);
+          refetch();
+        }}
+      />
+
       <PostMeta post={post} />
 
       <TextBlock label="Post text" text={post.text} />
@@ -111,6 +126,17 @@ export function ReviewBuildingPage() {
         }}
       >
         Dismiss from Building Review
+      </Button>
+
+      <Button
+        variant="neutral"
+        onClick={async () => {
+          if (!confirm("Delete this post? This cannot be undone.")) return;
+          const ok = (await postsApi.deletePost(post.id)).ok;
+          if (ok) await advance();
+        }}
+      >
+        Delete this post
       </Button>
     </div>
   );

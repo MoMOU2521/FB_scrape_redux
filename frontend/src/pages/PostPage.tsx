@@ -1,6 +1,7 @@
+// frontend/src/pages/PostPage.tsx
 import { useEffect, useState } from "react";
 import * as api from "@/api/posts";
-import { usePost, usePostActions } from "@/hooks/usePosts";
+import { usePost, useAuthorPosts, usePostActions } from "@/hooks/usePosts";
 import { PostMeta } from "@/components/posts/PostMeta";
 import { PostNav } from "@/components/posts/PostNav";
 import { PostStatusToggles } from "@/components/posts/PostStatusToggles";
@@ -16,40 +17,81 @@ interface PostPageProps {
 }
 
 export function PostPage({ initialAuthorRowId }: PostPageProps) {
-  const [rowId, setRowId] = useState<number | null>(null);
-  const [initLoading, setInitLoading] = useState(true);
+  const [authorMode, setAuthorMode] = useState(initialAuthorRowId != null);
+  const [rowId, setRowId] = useState<number | null>(initialAuthorRowId ?? null);
+  const [initLoading, setInitLoading] = useState(initialAuthorRowId == null);
 
   useEffect(() => {
-    if (initialAuthorRowId != null) {
-      setRowId(initialAuthorRowId);
-      setInitLoading(false);
-      return;
-    }
+    if (initialAuthorRowId != null) return;
     api.getNextUnprocessed().then(({ row_id }) => {
       setRowId(row_id);
       setInitLoading(false);
     });
   }, [initialAuthorRowId]);
 
-  const { data, loading, refetch } = usePost(rowId);
+  const globalQ = usePost(authorMode ? null : rowId);
+  const authorQ = useAuthorPosts(authorMode ? rowId : null);
+  const active = authorMode ? authorQ : globalQ;
+
+  const post = active.data?.post ?? null;
+  const nav = active.data?.nav ?? null;
+
   const { markProcessed, toggleSelected, remove } = usePostActions(
-    rowId,
-    refetch,
+    post?.id ?? null,
+    active.refetch,
   );
 
   async function advance() {
+    if (authorMode) {
+      // author endpoint resolves to the first remaining unprocessed post
+      authorQ.refetch();
+      return;
+    }
     const { row_id } = await api.getNextUnprocessed();
     setRowId(row_id);
   }
 
-  if (initLoading || loading) return <div className="p-6">Loading…</div>;
-  if (rowId == null) return <div className="p-6">All posts processed.</div>;
-  if (!data) return <div className="p-6">Not found.</div>;
+  async function exitAuthorMode() {
+    setAuthorMode(false);
+    const { row_id } = await api.getNextUnprocessed();
+    setRowId(row_id);
+  }
 
-  const { post, nav } = data;
+  if (initLoading || active.loading) return <div className="p-6">Loading…</div>;
+
+  if (!authorMode && rowId == null)
+    return <div className="p-6">All posts processed.</div>;
+
+  if (!post || !nav) {
+    return (
+      <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
+        <div>
+          {authorMode
+            ? "No more unprocessed posts by this author."
+            : "Not found."}
+        </div>
+        {authorMode && (
+          <Button variant="neutral" size="sm" onClick={exitAuthorMode}>
+            Back to all posts
+          </Button>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
+      {authorMode && (
+        <div className="flex items-center gap-3">
+          <span className="text-sm">
+            Unprocessed posts by <strong>{post.author}</strong>
+          </span>
+          <Button variant="neutral" size="xs" onClick={exitAuthorMode}>
+            Back to all posts
+          </Button>
+        </div>
+      )}
+
       <PostNav
         nav={nav}
         onPrev={() => nav.prev_id != null && setRowId(nav.prev_id)}
@@ -67,6 +109,12 @@ export function PostPage({ initialAuthorRowId }: PostPageProps) {
       />
 
       <PostMeta post={post} />
+
+      {!authorMode && (
+        <Button variant="neutral" size="sm" onClick={() => setAuthorMode(true)}>
+          Process all unprocessed posts by this author
+        </Button>
+      )}
 
       <TextBlock label="Post text" text={post.text} />
 
