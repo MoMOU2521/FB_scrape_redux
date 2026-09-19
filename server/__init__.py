@@ -8,15 +8,16 @@ from db.exceptions import (
     NoIdentifiableOwnerError,
     BuildingNotFoundError,
 )
+from server.posts import posts_bp
+from server.processed import processed_bp
 
 
 def create_app():
     app = Flask(__name__)
     CORS(app)  # dev only — tighten origins before anything public-facing
 
-    from server.posts import posts_bp
-
     app.register_blueprint(posts_bp)
+    app.register_blueprint(processed_bp)
 
     @app.errorhandler(OwnerConflictError)
     @app.errorhandler(BuildingConflictError)
