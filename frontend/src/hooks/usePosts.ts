@@ -23,6 +23,7 @@ function useAsyncPost<T>(fetcher: () => Promise<T> | null) {
       setData(res);
       setStatus("idle");
     }).catch((e: Error) => {
+      setData(null);
       setError(e.message);
       setStatus("error");
     });
@@ -62,9 +63,8 @@ export function usePostActions(rowId: number | null, onChanged?: () => void) {
     async (processed: 0 | 1) => {
       if (rowId == null) return;
       await api.markProcessed(rowId, processed);
-      onChanged?.();
     },
-    [rowId, onChanged],
+    [rowId],
   );
 
   const toggleSelected = useCallback(

@@ -42,7 +42,12 @@ export function ProcessedPage() {
         selected={!!post.selected}
         onProcessedChange={async (c) => {
           await postsApi.markProcessed(post.id, c ? 1 : 0);
-          refetch();
+          if (c) {
+            refetch();
+          } else {
+            const { row_id } = await processedApi.getNextProcessed();
+            setRowId(row_id);
+          }
         }}
         onSelectedChange={async (c) => {
           await postsApi.toggleSelected(post.id, c ? 1 : 0);

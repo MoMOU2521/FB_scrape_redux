@@ -49,7 +49,10 @@ export function PostPage() {
       <PostStatusToggles
         processed={!!post.processed}
         selected={!!post.selected}
-        onProcessedChange={(c) => markProcessed(c ? 1 : 0)}
+        onProcessedChange={async (c) => {
+          await markProcessed(c ? 1 : 0);
+          await advance();
+        }}
         onSelectedChange={(c) => toggleSelected(c ? 1 : 0)}
       />
 
