@@ -1,7 +1,9 @@
 import { useState } from "react";
 import * as api from "@/api/admin";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface AdminPanelProps {
   author: string;
@@ -49,8 +51,7 @@ export function AdminPanel({ author, onBlacklisted }: AdminPanelProps) {
           Blacklist {author}
         </Button>
         <div className="flex gap-2">
-          <input
-            className="flex-1 rounded-base border-2 border-border px-3 py-1.5 text-sm"
+          <Input
             placeholder="Enter filter phrase..."
             value={filterPhrase}
             onChange={(e) => setFilterPhrase(e.target.value)}
@@ -59,7 +60,11 @@ export function AdminPanel({ author, onBlacklisted }: AdminPanelProps) {
             Add
           </Button>
         </div>
-        {message && <span className="text-sm">{message}</span>}
+        {message && (
+          <Alert variant="destructive">
+            <AlertDescription>{message}</AlertDescription>
+          </Alert>
+        )}{" "}
       </CardContent>
     </Card>
   );
