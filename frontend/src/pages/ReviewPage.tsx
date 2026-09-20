@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export function ReviewPage() {
   const [reviewId, setReviewId] = useState<number | null>(null);
   const [initLoading, setInitLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api.getNextReview().then(({ row_id }) => {
@@ -31,6 +32,15 @@ export function ReviewPage() {
 
   const { row, nav } = data;
 
+  async function run(action: () => Promise<unknown>) {
+    setError(null);
+    try {
+      await action();
+      await advance();
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
       <PostNav
@@ -59,33 +69,23 @@ export function ReviewPage() {
       <TextBlock label="Post text" text={row.text} />
       <TextBlock label="Extraction JSON" text={row.extraction_result_json} />
 
-      <div className="flex gap-2">
-        <Button
-          onClick={async () => {
-            await api.approveReview(row.review_id);
-            await advance();
-          }}
-        >
+      <div className="flex items-center gap-2">
+        <Button onClick={() => run(() => api.approveReview(row.review_id))}>
           Approve (insert)
         </Button>
         <Button
           variant="neutral"
-          onClick={async () => {
-            await api.rejectReview(row.review_id);
-            await advance();
-          }}
+          onClick={() => run(() => api.rejectReview(row.review_id))}
         >
           Reject (discard)
         </Button>
         <Button
           variant="neutral"
-          onClick={async () => {
-            await api.dismissReview(row.review_id);
-            await advance();
-          }}
+          onClick={() => run(() => api.dismissReview(row.review_id))}
         >
           Dismiss (leave as-is)
         </Button>
+        {error && <span className="text-sm">{error}</span>}
       </div>
     </div>
   );

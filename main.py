@@ -3,7 +3,7 @@ import re
 
 from db.database import db
 import scrape.config as config
-from web.queries.blacklist import get_blacklist_counts
+from server.queries.blacklist import get_blacklist_counts
 from scrape.runner import run_group_with_watchdog, print_summary
 
 from db.services.posts.processing import cleanup_old_posts

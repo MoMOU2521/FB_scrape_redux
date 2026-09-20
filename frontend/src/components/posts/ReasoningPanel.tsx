@@ -32,7 +32,7 @@ export function ReasoningPanel({
           <span>
             🧠 {label} (prompt v{promptVersion ?? "unknown"})
           </span>
-          <ChevronDown className="size-4 shrink-0 transition-transform group-data-[panel-open]:rotate-180" />
+          <ChevronDown className="size-4 shrink-0 transition-transform group-data-[state=open]:rotate-180" />
         </CollapsibleTrigger>
         <CollapsibleContent>
           <CardContent className="mt-2 max-h-[400px] overflow-y-auto whitespace-pre-wrap text-sm text-foreground">

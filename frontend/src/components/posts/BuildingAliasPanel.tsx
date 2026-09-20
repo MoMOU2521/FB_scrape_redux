@@ -21,9 +21,13 @@ export function BuildingAliasPanel() {
       setMessage("Select a building and enter alias");
       return;
     }
-    const res = await api.addAlias(Number(buildingId), alias.trim());
-    setMessage(res.ok ? "Alias added" : "Failed to add alias");
-    if (res.ok) setAlias("");
+    try {
+      await api.addAlias(Number(buildingId), alias.trim());
+      setMessage("Alias added");
+      setAlias("");
+    } catch (e) {
+      setMessage(`Failed to add alias: ${(e as Error).message}`);
+    }
   }
 
   return (

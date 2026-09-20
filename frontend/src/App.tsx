@@ -5,6 +5,7 @@ import { ProcessedPage } from "@/pages/ProcessedPage";
 import { BlacklistPage } from "@/pages/BlacklistPage";
 import { FiltersPage } from "@/pages/FiltersPage";
 import { ReviewPage } from "@/pages/ReviewPage";
+import { LookupPage } from "@/pages/LookupPage";
 import { ReviewBuildingPage } from "@/pages/ReviewBuildingPage";
 import { StatsPage } from "@/pages/StatsPage";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 type View =
   | "unprocessed"
   | "processed"
+  | "lookup"
   | "blacklist"
   | "filters"
   | "review"
@@ -25,6 +27,7 @@ function App() {
   const views: { key: View; label: string }[] = [
     { key: "unprocessed", label: "Unprocessed" },
     { key: "processed", label: "Processed" },
+    { key: "lookup", label: "Lookup" },
     { key: "review", label: "Review" },
     { key: "review-building", label: "Building Review" },
     { key: "stats", label: "Stats" },
@@ -51,6 +54,7 @@ function App() {
       </div>
       {view === "unprocessed" && <PostPage initialAuthorRowId={authorRowId} />}
       {view === "processed" && <ProcessedPage />}
+      {view === "lookup" && <LookupPage />}
       {view === "review" && <ReviewPage />}
       {view === "review-building" && <ReviewBuildingPage />}
       {view === "stats" && (

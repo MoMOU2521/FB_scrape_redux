@@ -33,7 +33,10 @@ def get_review_building_with_nav(post_id):
     if not post:
         return None
     all_ids = queries.get_pending_building_ids()
-    return {"post": post, "nav": _nav_context(post_id, all_ids)}
+    nav = _nav_context(post_id, all_ids)
+    rows = asyncio.run(building_alias.get_building_names())
+    buildings = [{"id": r[0], "name": r[1]} for r in rows]
+    return {"post": post, "nav": nav, "buildings": buildings}
 
 
 async def _enter(row_id):
@@ -68,38 +71,6 @@ async def _enter(row_id):
 
 def enter(row_id: int):
     return asyncio.run(_enter(row_id))
-
-
-def dismiss(post_id: int):
-    if not queries.get_building_review_post(post_id):
-        raise LookupError(f"post {post_id} not in building review queue")
-    db.conn.execute("UPDATE posts SET review_building = 0 WHERE id = ?", (post_id,))
-    db.conn.commit()
-    return True
-
-
-def _nav_context(post_id, all_ids):
-    idx = next((i for i, rid in enumerate(all_ids) if rid == post_id), None)
-    if idx is None:
-        return None
-    total = len(all_ids)
-    return {
-        "current": idx + 1,
-        "total": total,
-        "prev_id": all_ids[idx - 1] if idx > 0 else None,
-        "next_id": all_ids[idx + 1] if idx < total - 1 else None,
-    }
-
-
-def get_review_building_with_nav(post_id):
-    post = queries.get_building_review_post(post_id)
-    if not post:
-        return None
-    all_ids = queries.get_pending_building_ids()
-    nav = _nav_context(post_id, all_ids)
-    rows = asyncio.run(building_alias.get_building_names())
-    buildings = [{"id": r[0], "name": r[1]} for r in rows]
-    return {"post": post, "nav": nav, "buildings": buildings}
 
 
 def assign(post_id: int, building_id: int):
