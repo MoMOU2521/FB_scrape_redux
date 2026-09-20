@@ -8,7 +8,7 @@ from db.services.db_entry.build_building_candidates import build_building_candid
 from db.services.db_entry.finalize_entry import finalize_entry
 
 from db.db_supabase import get_session
-from web.building_alias import add_building_alias
+from server.building_alias import add_building_alias
 
 
 async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
