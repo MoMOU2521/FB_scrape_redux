@@ -1,6 +1,6 @@
 # server/admin.py
 import asyncio
-import server.building_alias as building_alias
+import db.services.shared.building_alias as building_alias
 from flask import Blueprint, jsonify, request
 
 import server.queries.blacklist as blacklist_queries
