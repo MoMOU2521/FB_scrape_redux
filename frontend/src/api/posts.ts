@@ -20,6 +20,7 @@ export interface Post {
   extraction_reasoning: string | null;
   extraction_prompt_version: string | null;
   unprocessed_count: number;
+  processed_count?: number;
 }
 
 export interface NavContext {

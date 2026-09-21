@@ -102,7 +102,11 @@ export function ProcessedPage() {
         }}
       />
 
-      <PostMeta post={post} />
+      <PostMeta
+        post={post}
+        countLabel="Processed by this author"
+        count={post.processed_count}
+      />
 
       {!authorMode && (
         <Button variant="neutral" size="sm" onClick={() => setAuthorMode(true)}>

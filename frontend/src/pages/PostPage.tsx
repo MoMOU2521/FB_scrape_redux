@@ -108,7 +108,11 @@ export function PostPage({ initialAuthorRowId }: PostPageProps) {
         onSelectedChange={(c) => toggleSelected(c ? 1 : 0)}
       />
 
-      <PostMeta post={post} />
+      <PostMeta
+        post={post}
+        countLabel="Unprocessed by this author"
+        count={post.unprocessed_count}
+      />
 
       {!authorMode && (
         <Button variant="neutral" size="sm" onClick={() => setAuthorMode(true)}>
