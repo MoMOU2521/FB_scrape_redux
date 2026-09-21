@@ -3,8 +3,8 @@ import asyncio
 import json
 
 import server.queries.review_building as queries
-import server.building_alias as building_alias
 import server.queries.review as review_queries
+import db.services.shared.building_alias as building_alias
 from db.database import db
 from db.db_supabase import get_session
 import db.db_entry as db_entry
