@@ -137,6 +137,12 @@ export function ProcessedPage() {
       <Button
         variant="neutral"
         onClick={async () => {
+          if (
+            !confirm(
+              "Are you sure you want to delete this post? This cannot be undone.",
+            )
+          )
+            return;
           const ok = (await postsApi.deletePost(post.id)).ok;
           if (!ok) return;
           if (authorMode) active.refetch();

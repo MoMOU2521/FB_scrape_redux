@@ -9,16 +9,27 @@ interface EnterIntoDbProps {
 
 export function EnterIntoDb({ rowId, onDone }: EnterIntoDbProps) {
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   async function enter() {
     setBusy(true);
-    setError(null);
+    setMessage("Processing...");
     try {
-      await api.enterPost(rowId);
+      const res = await api.enterPost(rowId);
+      if (res.decision === "discard") {
+        setMessage("Skipped: exact duplicate exists.");
+      } else if (res.decision === "review") {
+        setMessage(
+          `Sent to review (candidate ID: ${res.candidate_property_id})`,
+        );
+      } else {
+        setMessage(`Entered! Property ID: ${res.property_id}`);
+      }
+      await new Promise((r) => setTimeout(r, 1000));
+      setMessage(null);
       onDone();
     } catch (e) {
-      setError((e as Error).message);
+      setMessage((e as Error).message);
     } finally {
       setBusy(false);
     }
@@ -29,7 +40,7 @@ export function EnterIntoDb({ rowId, onDone }: EnterIntoDbProps) {
       <Button size="sm" onClick={enter} disabled={busy}>
         Enter into DB
       </Button>
-      {error && <span className="text-sm">{error}</span>}
+      {message && <span className="text-sm">{message}</span>}
     </div>
   );
 }

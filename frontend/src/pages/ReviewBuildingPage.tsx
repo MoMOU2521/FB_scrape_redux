@@ -47,6 +47,7 @@ export function ReviewBuildingPage() {
       } else {
         setFeedback(`Entered! Property ID: ${res.property_id}`);
       }
+      await new Promise((r) => setTimeout(r, 1000));
       await advance();
     } catch (e) {
       setFeedback((e as Error).message);

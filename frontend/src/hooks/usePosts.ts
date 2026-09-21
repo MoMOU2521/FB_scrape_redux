@@ -78,6 +78,12 @@ export function usePostActions(rowId: number | null, onChanged?: () => void) {
 
   const remove = useCallback(async () => {
     if (rowId == null) return false;
+    if (
+      !confirm(
+        "Are you sure you want to delete this post? This cannot be undone.",
+      )
+    )
+      return false;
     const res = await api.deletePost(rowId);
     return res.ok;
   }, [rowId]);
