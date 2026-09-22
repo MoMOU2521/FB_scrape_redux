@@ -17,8 +17,8 @@ from db.services.scraper.post_validation import (
     increment_blacklist_count,
     matches_filter_phrase,
 )
-from db.services.scraper.get_last_scraped_post import get_last_scraped_post
-from db.services.scraper.save_post import save_post
+from db.services.scraper.checkpoint import save_checkpoint, get_checkpoint
+from db.services.scraper.save_post import save_post, save_stub_post
 
 
 # ===================== FILTER HELPERS =====================
@@ -52,9 +52,7 @@ def scrape_group(
 
     # last-post boundary is only relevant in that mode, but resolving it
     # unconditionally keeps the branch below simple and cheap either way
-    last_scraped = (
-        get_last_scraped_post(group["name"]) if stop_mode == "last_post" else None
-    )
+    last_scraped = get_checkpoint(group["name"]) if stop_mode == "last_post" else None
 
     debug.log(f"\n{'='*60}")
     debug.log(f"STARTING GROUP: {group['name']}")
@@ -63,7 +61,7 @@ def scrape_group(
         if last_scraped:
             debug.log(
                 f"LAST SCRAPED POST: "
-                f"{last_scraped['group_name']} / {last_scraped['post_id']}"
+                f"{last_scraped['group_name']} / {last_scraped['top_post_id']}"
             )
         else:
             debug.log("LAST SCRAPED POST: NONE (first scrape of this group)")
@@ -192,7 +190,7 @@ def scrape_group(
                     stop_mode == "last_post"
                     and last_scraped is not None
                     and group["name"] == last_scraped["group_name"]
-                    and post_id == last_scraped["post_id"]
+                    and post_id == last_scraped["top_post_id"]
                 ):
                     print(f"   🛑 STOP: reached last scraped post ({post_id})")
                     stop_scraping = True
@@ -200,6 +198,11 @@ def scrape_group(
 
                 seen_ids.add(post_id)
                 encountered += 1
+
+                if encountered == 1:
+                    save_checkpoint(
+                        group["name"], post_id, datetime.now(timezone.utc).isoformat()
+                    )
 
                 print(f"📄 [{encountered}] {post_id}")
 
@@ -261,10 +264,20 @@ def scrape_group(
                         "WARN",
                     )
                     skip_blacklist += 1
+                    save_stub_post(
+                        post["post_id"],
+                        group["name"],
+                        datetime.now(timezone.utc).isoformat(),
+                    )
                     continue
 
                 if not post["success"]:
                     skip_no_text += 1
+                    save_stub_post(
+                        post["post_id"],
+                        group["name"],
+                        datetime.now(timezone.utc).isoformat(),
+                    )
                 else:
                     matched = matches_filter_phrase(post["text"])
                     if matched:
@@ -274,6 +287,11 @@ def scrape_group(
                             "WARN",
                         )
                         skip_filter += 1
+                        save_stub_post(
+                            post["post_id"],
+                            group["name"],
+                            datetime.now(timezone.utc).isoformat(),
+                        )
                     else:
                         scraped_at = datetime.now(timezone.utc).isoformat()
                         if save_post(
@@ -290,6 +308,7 @@ def scrape_group(
                         else:
                             debug.log("  SKIPPED: duplicate author+text in DB", "WARN")
                             skip_dedup += 1
+                            save_stub_post(post["post_id"], group["name"], scraped_at)
 
             if stop_scraping or terminated:
                 break

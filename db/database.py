@@ -84,6 +84,12 @@ class LocalDatabase:
                 created_at TEXT NOT NULL
             );
 
+            CREATE TABLE IF NOT EXISTS scrape_checkpoint (
+                group_name TEXT PRIMARY KEY,
+                top_post_id TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            );
+            
             CREATE INDEX IF NOT EXISTS idx_dedup
                 ON posts(author, text);
 
