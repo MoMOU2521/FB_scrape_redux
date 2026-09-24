@@ -10,6 +10,7 @@ from db.exceptions import (
     BuildingConflictError,
     NoIdentifiableOwnerError,
 )
+from db.services.db_entry.print_entry_summary import print_entry_summary
 
 
 async def finalize_entry(row, post_json, building_id=None):
@@ -58,9 +59,20 @@ async def finalize_entry(row, post_json, building_id=None):
         mark_processed(row["id"])
         return True
 
+    # if decision == "insert":
+    #     print(f"[RESOLVED] row={row['id']} -> {row['post_url']}")
+    #     mark_processed(row["id"])
+    #     return True
+
     if decision == "insert":
-        print(f"[RESOLVED] row={row['id']} -> {row['post_url']}")
         mark_processed(row["id"])
+        try:
+            await print_entry_summary(row, candidate_property_id)
+        except Exception as e:
+            print(
+                f"[RESOLVED] row={row['id']} property_id={candidate_property_id} "
+                f"-> {row['post_url']} (summary failed: {e})"
+            )
         return True
 
     mark_processed(row["id"])

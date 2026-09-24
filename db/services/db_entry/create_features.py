@@ -38,6 +38,6 @@ async def create_features(db, property_id: int, post_json: dict, org_id=ORG_ID):
         ],
     )
 
-    print(
-        f"insert property_features:\n  property_id: {property_id}\n  count: {len(validated)}"
-    )
+    # print(
+    #     f"insert property_features:\n  property_id: {property_id}\n  count: {len(validated)}"
+    # )

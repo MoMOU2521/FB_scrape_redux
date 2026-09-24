@@ -23,4 +23,4 @@ async def create_sale_term(db, property_id: int, post_json: dict, org_id=ORG_ID)
         )
     )
 
-    print(f"insert sale_term:\n  price: {sale_data['price']}")
+    # print(f"insert sale_term:\n  price: {sale_data['price']}")

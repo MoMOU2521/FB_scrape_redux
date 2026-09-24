@@ -82,9 +82,9 @@ async def resolve_or_create_owner(
                     for c in new_contacts
                 ],
             )
-            print(
-                f"insert owner_contacts:\n  owner_id: {owner_id}\n  count: {len(new_contacts)}"
-            )
+            # print(
+            #     f"insert owner_contacts:\n  owner_id: {owner_id}\n  count: {len(new_contacts)}"
+            # )
 
         return owner_id
 
@@ -98,7 +98,7 @@ async def resolve_or_create_owner(
     )
     owner_id = result.scalar_one()
 
-    print(f"insert owner:\n  id: {owner_id}\n  name: {name}")
+    # print(f"insert owner:\n  id: {owner_id}\n  name: {name}")
 
     if validated_contacts:
         await db.execute(
@@ -115,8 +115,8 @@ async def resolve_or_create_owner(
                 for c in validated_contacts
             ],
         )
-        print(
-            f"insert owner_contacts:\n  owner_id: {owner_id}\n  count: {len(validated_contacts)}"
-        )
+        # print(
+        #     f"insert owner_contacts:\n  owner_id: {owner_id}\n  count: {len(validated_contacts)}"
+        # )
 
     return owner_id

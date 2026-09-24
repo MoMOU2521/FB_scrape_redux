@@ -143,30 +143,31 @@ async def attempt_manual_building_resolution(row, post_json, transliterate_ai):
     # --------------------------------------------------------
     # Stage 6: alias
     # --------------------------------------------------------
-    if round(picked.score, 3) != 1.000:
+    # Fuzzy score is trigram similarity, not string equality (1.000 can still
+    # differ by punctuation/case). The automatic lookup is lower(trim(x)) ==,
+    # so decide on that.
+    picked_norm = picked.building_name.strip().lower()
 
-        alias_candidates = [
-            c["name"]
-            for c in candidates
-            if c["name"].lower() != picked.building_name.lower()
-        ]
+    alias_candidates = [
+        c["name"] for c in candidates if c["name"].strip().lower() != picked_norm
+    ]
 
-        if alias_candidates:
-            print("\n[ALIAS OPTIONS]")
+    if alias_candidates:
+        print("\n[ALIAS OPTIONS]")
 
-            for i, alias in enumerate(alias_candidates, start=1):
-                print(f"  {i}. {alias}")
+        for i, alias in enumerate(alias_candidates, start=1):
+            print(f"  {i}. {alias}")
 
-            print("  0. No alias")
+        print("  0. No alias")
 
-            alias_choice = input(
-                f"Select alias to save (0-{len(alias_candidates)}): "
-            ).strip()
+        alias_choice = input(
+            f"Select alias to save (0-{len(alias_candidates)}): "
+        ).strip()
 
-            if alias_choice in [str(i) for i in range(1, len(alias_candidates) + 1)]:
-                await add_building_alias(
-                    picked.id,
-                    alias_candidates[int(alias_choice) - 1],
-                )
+        if alias_choice in [str(i) for i in range(1, len(alias_candidates) + 1)]:
+            await add_building_alias(
+                picked.id,
+                alias_candidates[int(alias_choice) - 1],
+            )
 
     return await finalize_entry(row, post_json, building_id=picked.id)

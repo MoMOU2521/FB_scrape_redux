@@ -19,6 +19,7 @@ export function BlacklistPage() {
   const [rows, setRows] = useState<api.BlacklistRow[]>([]);
   const [sort, setSort] = useState<"count" | "alpha">("count");
   const [newAuthor, setNewAuthor] = useState("");
+  const [search, setSearch] = useState("");
   const [message, setMessage] = useState<Message | null>(null);
 
   function refresh(s: "count" | "alpha" = sort) {
@@ -51,6 +52,10 @@ export function BlacklistPage() {
     await api.deleteBlacklist(author);
     refresh();
   }
+
+  const filteredRows = rows.filter((r) =>
+    r.author.toLowerCase().includes(search.trim().toLowerCase()),
+  );
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 p-6">
@@ -85,6 +90,12 @@ export function BlacklistPage() {
         </Button>
       </div>
 
+      <Input
+        placeholder="Search by author"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
       {message && (
         <Alert variant={message.variant}>
           <AlertDescription>{message.text}</AlertDescription>
@@ -100,14 +111,14 @@ export function BlacklistPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.length === 0 ? (
+          {filteredRows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={3} className="text-center text-foreground/60">
                 No blacklisted authors.
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((r) => (
+            filteredRows.map((r) => (
               <TableRow key={r.author}>
                 <TableCell>{r.author}</TableCell>
                 <TableCell>

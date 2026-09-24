@@ -23,9 +23,14 @@ async def create_property_registry(
 
     result = await db.execute(
         insert(property_registry)
-        .values(owner_id=owner_id, org_id=org_id, **form_data.model_dump())
+        .values(
+            owner_id=owner_id,
+            org_id=org_id,
+            fb_posted=False,
+            **form_data.model_dump(),
+        )
         .returning(property_registry.c.id)
     )
     property_id = result.scalar_one()
-    print(f"insert property_registry:\n  id: {property_id}\n  owner_id: {owner_id}")
+    # print(f"insert property_registry:\n  id: {property_id}\n  owner_id: {owner_id}")
     return property_id

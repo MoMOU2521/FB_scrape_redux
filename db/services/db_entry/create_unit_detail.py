@@ -54,16 +54,16 @@ async def create_unit_detail(
         )
     )
 
-    print(
-        f"insert condo_apt_unit_info:\n"
-        # f"  property_id: {property_id}\n"
-        f"  building_id: {building_id}\n"
-        f"  room_number: {unit.get('room_number')}\n"
-        f"  floor: {unit.get('floor')}\n"
-        f"  tower: {unit.get('tower')}\n"
-        f"  bedroom: {unit.get('bedroom') if unit.get('bedroom') is not None else 1}\n"
-        f"  bathroom: {unit.get('bathroom') if unit.get('bathroom') is not None else 1}\n"
-        f"  sqm: {unit.get('sqm')}\n"
-        f"  exposure: {exposure}\n"
-        f"  view: {view}"
-    )
+    # print(
+    #     f"insert condo_apt_unit_info:\n"
+    #     # f"  property_id: {property_id}\n"
+    #     f"  building_id: {building_id}\n"
+    #     f"  room_number: {unit.get('room_number')}\n"
+    #     f"  floor: {unit.get('floor')}\n"
+    #     f"  tower: {unit.get('tower')}\n"
+    #     f"  bedroom: {unit.get('bedroom') if unit.get('bedroom') is not None else 1}\n"
+    #     f"  bathroom: {unit.get('bathroom') if unit.get('bathroom') is not None else 1}\n"
+    #     f"  sqm: {unit.get('sqm')}\n"
+    #     f"  exposure: {exposure}\n"
+    #     f"  view: {view}"
+    # )
