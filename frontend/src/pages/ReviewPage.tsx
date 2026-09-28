@@ -5,7 +5,7 @@ import { useReview } from "@/hooks/useReview";
 import { PostNav } from "@/components/posts/PostNav";
 import { TextBlock } from "@/components/posts/TextBlock";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { PostMeta } from "@/components/posts/PostMeta";
 
 export function ReviewPage() {
   const [reviewId, setReviewId] = useState<number | null>(null);
@@ -49,7 +49,7 @@ export function ReviewPage() {
         onNext={() => nav.next_id != null && setReviewId(nav.next_id)}
       />
 
-      <Card>
+      {/* <Card>
         <CardContent className="flex flex-col gap-1 text-sm">
           <span className="font-base text-base">{row.author}</span>
           <span>
@@ -64,7 +64,22 @@ export function ReviewPage() {
             {row.candidate_property_id ?? "None recorded"}
           </span>
         </CardContent>
-      </Card>
+      </Card> */}
+      <PostMeta
+        post={{
+          id: row.post_id,
+          author: row.author,
+          group_name: row.group_name,
+          post_id: row.fb_post_id,
+          scraped_at: row.scraped_at,
+          post_url: row.post_url,
+        }}
+      >
+        <span>
+          Candidate duplicate property ID:{" "}
+          {row.candidate_property_id ?? "None recorded"}
+        </span>
+      </PostMeta>
 
       <TextBlock label="Post text" text={row.text} />
       <TextBlock label="Extraction JSON" text={row.extraction_result_json} />

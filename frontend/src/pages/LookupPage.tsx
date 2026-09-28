@@ -4,7 +4,7 @@ import * as api from "@/api/posts";
 import type { LookupPost } from "@/api/posts";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { PostMeta } from "@/components/posts/PostMeta";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { TextBlock } from "@/components/posts/TextBlock";
 import { ReasoningPanel } from "@/components/posts/ReasoningPanel";
@@ -49,7 +49,13 @@ export function LookupPage() {
 
       {post && (
         <>
-          <Card>
+          <PostMeta post={post}>
+            <span>Processed: {post.processed ? "Yes" : "No"}</span>
+            <span>Selected: {post.selected ? "Yes" : "No"}</span>
+            <span>AI Processed: {post.ai_processed ? "Yes" : "No"}</span>
+            <span>Building Review: {post.review_building ? "Yes" : "No"}</span>
+          </PostMeta>
+          {/* <Card>
             <CardContent className="flex flex-col gap-1 text-sm">
               <span className="font-base text-base">{post.author}</span>
               <span>Group: {post.group_name}</span>
@@ -69,7 +75,7 @@ export function LookupPage() {
                 </a>
               </span>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <TextBlock label="Post text" text={post.text} />
 

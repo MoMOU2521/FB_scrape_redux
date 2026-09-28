@@ -1,6 +1,11 @@
 # db.helpers.py
 import re
 
+ANONYMOUS_AUTHORS = {"anonymous", "anonymous member"}
+
+
+def is_anonymous_author(author) -> bool:
+    return not author or author.strip().lower() in ANONYMOUS_AUTHORS
 
 def normalize_phone_th(raw: str) -> str:
     """Normalize Thai phone numbers to local format: 0XXXXXXXXX."""
@@ -18,20 +23,6 @@ def normalize_phone_th(raw: str) -> str:
         s = "0" + s
 
     return s
-
-
-# def _build_contact_list(gate1_contacts: list[dict], author: str) -> list[dict]:
-#     contacts = list(gate1_contacts)
-#     if author and author != "Anonymous":
-#         contacts.append(
-#             {
-#                 "contact_name": None,
-#                 "contact_type": "facebook",
-#                 "contact_value": author,
-#                 "contact_note": None,
-#             }
-#         )
-#     return contacts
 
 
 def normalize_author(author):

@@ -120,7 +120,7 @@ def get_author_of_post(row_id: int):
 def get_posts_by_author_unprocessed(author: str):
     rows = db.cur.execute(
         """
-        SELECT id, post_id, author, text, post_url, processed, group_name, selected,
+        SELECT id, post_id, author, text, post_url, processed, group_name, scraped_at, selected,
                result_json_v1, gate1_reasoning, gate1_prompt_version,
                extraction_result_json, extraction_reasoning, extraction_prompt_version
         FROM posts

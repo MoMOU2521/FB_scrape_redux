@@ -44,6 +44,7 @@ def get_review_row(review_id: int):
                rq.reviewed,
                rq.created_at,
                p.author,
+               p.group_name,
                p.post_id AS fb_post_id,
                p.post_url,
                p.text,

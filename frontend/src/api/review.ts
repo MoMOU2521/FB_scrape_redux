@@ -10,6 +10,7 @@ export interface ReviewRow {
   reviewed: number;
   created_at: string;
   author: string;
+  group_name: string;
   fb_post_id: string;
   post_url: string;
   text: string;
