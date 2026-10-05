@@ -1,10 +1,12 @@
 # ai/config.py
 
 GATE1_PROMPT_VERSION = "v1"
+GATE2_PROMPT_VERSION = "v1"
 EXTRACTION_PROMPT_VERSION = "v1"
 TRANSLITERATE_PROMPT_VERSION = "v1"
 
 GATE1_MODEL = "openai/gpt-oss-20b"
+GATE2_MODEL = "llama-3.3-70b-versatile"
 EXTRACTION_MODEL = "openai/gpt-oss-120b"
 # EXTRACTION_MODEL = "qwen/qwen3.6-27b"
 # TRANSLITERATE_MODEL = "openai/gpt-oss-120b"
@@ -41,6 +43,16 @@ MODEL_CONTROLS = {
         "response_format": {"type": "json_object"},
         "stream": False,
     },
+    "llama-3.3-70b-versatile": {
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "max_completion_tokens": 400,
+        "supports_json_schema": False,
+        "response_format": {"type": "json_object"},
+        "stop": None,
+        "stream": False,
+        "seed": None,
+    },
     "openai/gpt-oss-20b": {
         "temperature": 0.0,
         "top_p": 1.0,
@@ -53,3 +65,5 @@ MODEL_CONTROLS = {
         "seed": None,
     },
 }
+
+# Llama-3.3-70b-Versatile

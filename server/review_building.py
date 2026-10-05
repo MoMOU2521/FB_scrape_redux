@@ -1,4 +1,5 @@
 # server/review_building.py
+import sqlite3
 from flask import Blueprint, jsonify, request
 
 import server.queries.review_building as queries
@@ -29,6 +30,8 @@ def enter(post_id):
         return jsonify({"ok": True, **result})
     except LookupError as e:
         return jsonify({"error": str(e)}), 404
+    except sqlite3.IntegrityError as e:
+        return jsonify({"error": f"already in review queue: {e}"}), 409
 
 
 @review_building_bp.post("/<int:post_id>/assign")

@@ -15,6 +15,14 @@ from db.services.db_entry.enter_post_with_known_building import (
 )
 
 
+def _mark_done(row_id):
+    db.conn.execute(
+        "UPDATE posts SET processed = 1, review_building = 0 WHERE id = ?",
+        (row_id,),
+    )
+    db.conn.commit()
+
+
 def _nav_context(post_id, all_ids):
     idx = next((i for i, rid in enumerate(all_ids) if rid == post_id), None)
     if idx is None:
@@ -49,24 +57,50 @@ async def _enter(row_id):
         post_json, p["author"], p["post_url"], p["text"], p["scraped_at"]
     )
 
-    db.conn.execute(
-        "UPDATE posts SET processed = 1, review_building = 0 WHERE id = ?",
-        (row_id,),
-    )
-    db.conn.commit()
-
     if decision == "discard":
+        _mark_done(row_id)
         return {"discarded": True}
 
     if decision == "review":
         review_queries.queue_review(row_id, candidate_property_id)
+        _mark_done(row_id)
         return {
             "sent_to_review": True,
             "candidate_property_id": candidate_property_id,
         }
 
     toggle_selected(row_id, 1)
+    _mark_done(row_id)
     return {"property_id": candidate_property_id}
+
+
+# async def _enter(row_id):
+#     p = queries.get_building_review_post(row_id)
+#     if not p:
+#         raise LookupError(f"post {row_id} not in building review queue")
+
+#     post_json = json.loads(p["extraction_result_json"])
+#     decision, candidate_property_id = await db_entry.enter_post(
+#         post_json, p["author"], p["post_url"], p["text"], p["scraped_at"]
+#     )
+
+#     if decision == "discard":
+#         return {"discarded": True}
+
+#     if decision == "review":
+#         review_queries.queue_review(row_id, candidate_property_id)
+#         return {
+#             "sent_to_review": True,
+#             "candidate_property_id": candidate_property_id,
+#         }
+#     db.conn.execute(
+#         "UPDATE posts SET processed = 1, review_building = 0 WHERE id = ?",
+#         (row_id,),
+#     )
+#     db.conn.commit()
+
+#     toggle_selected(row_id, 1)
+#     return {"property_id": candidate_property_id}
 
 
 def enter(row_id: int):
