@@ -61,6 +61,10 @@ class LocalDatabase:
                 gate1_reasoning TEXT,
                 gate1_prompt_version TEXT,
 
+                gate2_result_json TEXT,
+                gate2_reasoning TEXT,
+                gate2_prompt_version TEXT,
+
                 extraction_result_json TEXT,
                 extraction_reasoning TEXT,
                 extraction_prompt_version TEXT
