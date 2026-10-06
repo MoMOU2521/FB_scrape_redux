@@ -46,7 +46,7 @@ MODEL_CONTROLS = {
     "llama-3.3-70b-versatile": {
         "temperature": 0.0,
         "top_p": 1.0,
-        "max_completion_tokens": 400,
+        "max_completion_tokens": 250,
         "supports_json_schema": False,
         "response_format": {"type": "json_object"},
         "stop": None,
@@ -56,7 +56,7 @@ MODEL_CONTROLS = {
     "openai/gpt-oss-20b": {
         "temperature": 0.0,
         "top_p": 1.0,
-        "max_completion_tokens": 1200,
+        "max_completion_tokens": 600,
         "reasoning_effort": "low",
         "reasoning_format": "parsed",
         "response_format": {"type": "json_object"},

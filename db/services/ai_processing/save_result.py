@@ -23,6 +23,25 @@ def save_gate1_result(
     db.conn.commit()
 
 
+def save_gate2_result(
+    row_id: int,
+    result_json: str,
+    reasoning: str,
+    prompt_version: str,
+) -> None:
+    db.conn.execute(
+        """
+        UPDATE posts
+        SET gate2_result_json = ?,
+            gate2_reasoning = ?,
+            gate2_prompt_version = ?
+        WHERE id = ?
+        """,
+        (result_json, reasoning, prompt_version, row_id),
+    )
+    db.conn.commit()
+
+
 def save_extraction_result(
     row_id: int,
     result_json: str,
