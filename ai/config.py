@@ -6,7 +6,7 @@ EXTRACTION_PROMPT_VERSION = "v1"
 TRANSLITERATE_PROMPT_VERSION = "v1"
 
 GATE1_MODEL = "openai/gpt-oss-20b"
-GATE2_MODEL = "llama-3.3-70b-versatile"
+GATE2_MODEL = "openai/gpt-oss-safeguard-20b"
 EXTRACTION_MODEL = "openai/gpt-oss-120b"
 # EXTRACTION_MODEL = "qwen/qwen3.6-27b"
 # TRANSLITERATE_MODEL = "openai/gpt-oss-120b"
@@ -43,11 +43,12 @@ MODEL_CONTROLS = {
         "response_format": {"type": "json_object"},
         "stream": False,
     },
-    "llama-3.3-70b-versatile": {
+    "openai/gpt-oss-safeguard-20b": {
         "temperature": 0.0,
         "top_p": 1.0,
-        "max_completion_tokens": 250,
-        "supports_json_schema": False,
+        "max_completion_tokens": 800,
+        "reasoning_effort": "low",
+        "reasoning_format": "parsed",
         "response_format": {"type": "json_object"},
         "stop": None,
         "stream": False,
