@@ -24,7 +24,7 @@ def get_building_review_post(post_id: int):
     row = db.cur.execute(
         """
         SELECT id, post_id, author, text, post_url, processed, group_name, scraped_at, selected,
-               result_json_v1, gate1_reasoning, gate1_prompt_version,
+               result_json_v1, gate1_reasoning, gate1_prompt_version, gate2_result_json, gate2_reasoning, gate2_prompt_version,
                extraction_result_json, extraction_reasoning, extraction_prompt_version,
                review_building
         FROM posts

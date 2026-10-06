@@ -16,6 +16,9 @@ export interface Post {
   result_json_v1: string | null;
   gate1_reasoning: string | null;
   gate1_prompt_version: string | null;
+  gate2_result_json: string | null;
+  gate2_reasoning: string | null;
+  gate2_prompt_version: string | null;
   extraction_result_json: string | null;
   extraction_reasoning: string | null;
   extraction_prompt_version: string | null;

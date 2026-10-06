@@ -132,7 +132,16 @@ export function PostPage({ initialAuthorRowId }: PostPageProps) {
         promptVersion={post.gate1_prompt_version}
         reasoning={post.gate1_reasoning}
       />
-
+      <TextBlock
+        label="AI Result (Gate 2)"
+        text={post.gate2_result_json}
+        fallback="Not yet run through Gate 2"
+      />
+      <ReasoningPanel
+        label="Gate 2 reasoning"
+        promptVersion={post.gate2_prompt_version}
+        reasoning={post.gate2_reasoning}
+      />
       <TextBlock
         label="AI Result (Extraction)"
         text={post.extraction_result_json}
