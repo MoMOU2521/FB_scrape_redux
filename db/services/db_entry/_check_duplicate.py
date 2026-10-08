@@ -67,13 +67,14 @@ async def _check_duplicate(db, owner_id: int, building_id: int, post_json: dict)
             incoming_sqm is not None and r.sqm is not None and incoming_sqm == r.sqm
         )
 
-        if (
-            floor is not None
-            and r.floor is not None
-            and floor == r.floor
-            and sqm_match
-            and not tower_conflicts
-        ):
+        # if (
+        #     floor is not None
+        #     and r.floor is not None
+        #     and floor == r.floor
+        #     and sqm_match
+        #     and not tower_conflicts
+        # ):
+        if floor == r.floor and sqm_match and not tower_conflicts:
             return "review", r.property_id
 
     return "insert", None

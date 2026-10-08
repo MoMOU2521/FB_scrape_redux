@@ -6,11 +6,11 @@ EXTRACTION_PROMPT_VERSION = "v1"
 TRANSLITERATE_PROMPT_VERSION = "v1"
 
 GATE1_MODEL = "openai/gpt-oss-20b"
-GATE2_MODEL = "openai/gpt-oss-safeguard-20b"
+GATE2_MODEL = "qwen/qwen3.6-27b"
 EXTRACTION_MODEL = "openai/gpt-oss-120b"
 # EXTRACTION_MODEL = "qwen/qwen3.6-27b"
 # TRANSLITERATE_MODEL = "openai/gpt-oss-120b"
-TRANSLITERATE_MODEL = "qwen/qwen3.8-27b"
+TRANSLITERATE_MODEL = "openai/gpt-oss-safeguard-20b"
 
 GATE1_MAX_CHARS = 2000
 OVERSIZED_MAX_CHARS = 2500
